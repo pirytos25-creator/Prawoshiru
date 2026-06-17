@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kronika Pióra — Wyprawa po Prawo Autorskie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=MedievalSharp&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#33240f;          /* main brown-black ink */
+  --ink-soft:#5e4526;     /* softer ink */
+  --parch:#e8d4a8;        /* aged parchment base */
+  --parch-2:#dcc795;      /* deeper aged parchment */
+  --parch-card:#ecdcb4;   /* lighter parchment */
+  --rubric:#8e2b1c;       /* rubrication red (headings) */
+  --rubric-soft:#a8503a;
+  --gold:#9c7327;         /* aged gold */
+  --gold-bright:#c79a45;  /* brighter gold */
+  --green:#4a5a2a;        /* olive (subtle, warm) */
+  --green-deep:#3a4720;
+  --crimson:#8e2b1c;      /* alias of rubric for warnings */
+  --crimson-bright:#a8503a;
+  --ember:#c06a25;        /* ember glow */
+  --wood:#43301a;         /* dark leather */
+  --wood-2:#5a4222;       /* lighter leather */
+  --accent:#9c7327;       /* unified warm ornament accent */
+  --line:rgba(120,82,28,.34);
+  --fd:'Cinzel',serif;
+  --fb:'EB Garamond',Georgia,serif;
+  --fm:'Cinzel',serif;    /* small-caps labels instead of mono */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--fb);color:var(--ink);
+  background:#0e0a05 url('shire_background.png') no-repeat center center fixed;
+  background-size:cover;min-height:100vh;overflow-x:hidden;position:relative;
+}
+/* atmospheric overlays */
+#tint{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(circle at 50% 40%,transparent 8%,rgba(14,9,4,.55) 55%,rgba(10,6,2,.9) 100%);}
+#fire{position:fixed;inset:0;z-index:2;pointer-events:none;mix-blend-mode:soft-light;
+  background:radial-gradient(circle at 50% 75%,rgba(224,116,45,.22) 0%,transparent 55%);opacity:.85;}
+body.flicker #fire{animation:flick 7s infinite alternate}
+@keyframes flick{0%{opacity:.6}20%{opacity:.95}40%{opacity:.7}60%{opacity:1}80%{opacity:.72}100%{opacity:.9}}
+#dust{position:fixed;inset:0;z-index:3;pointer-events:none}
+.vignette-edges{position:fixed;inset:0;z-index:2;pointer-events:none;
+  box-shadow:inset 0 0 220px 60px rgba(8,5,2,.9)}
+
+/* ===== generic screen ===== */
+.screen{position:relative;z-index:10;display:none;min-height:100vh;animation:fadeIn .7s ease both}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ===== INTRO ===== */
+#intro{text-align:center;padding:40px 18px;min-height:100vh}
+#intro.active{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.intro-leaf{width:74px;opacity:.9;filter:drop-shadow(0 4px 14px rgba(0,0,0,.6));animation:sway 6s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+.intro-kicker{font-family:var(--fm);letter-spacing:.5em;text-transform:uppercase;font-size:12px;color:var(--gold-bright);margin:26px 0 10px;text-shadow:0 2px 8px #000}
+.intro-title{font-family:var(--fd);font-weight:900;color:var(--parch);font-size:clamp(38px,8vw,86px);line-height:1.02;text-shadow:0 4px 2px #000,0 0 40px rgba(236,192,106,.35);letter-spacing:.02em}
+.intro-title .em{color:var(--gold-bright)}
+.intro-sub{font-family:var(--fb);font-style:italic;color:var(--parch-2);font-size:clamp(16px,2.4vw,22px);max-width:640px;margin:22px auto 0;text-shadow:0 2px 10px #000;line-height:1.5}
+.intro-poem{font-family:var(--fb);color:#d9c39a;font-size:14px;line-height:1.9;margin:30px auto 0;max-width:520px;text-shadow:0 2px 8px #000;opacity:.92}
+.btn-begin{margin-top:40px;font-family:var(--fd);font-weight:700;font-size:19px;letter-spacing:.08em;color:#1c1206;
+  background:linear-gradient(180deg,var(--gold-bright),var(--gold));border:none;border-radius:40px;padding:18px 46px;cursor:pointer;
+  box-shadow:0 10px 30px rgba(0,0,0,.6),0 0 30px rgba(236,192,106,.4),inset 0 1px 0 rgba(255,255,255,.5);
+  transition:transform .2s,box-shadow .2s}
+.btn-begin:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 16px 40px rgba(0,0,0,.7),0 0 48px rgba(236,192,106,.65)}
+.intro-hint{margin-top:18px;font-family:var(--fm);font-size:11px;color:#b09a6e;letter-spacing:.2em}
+
+/* ===== TOP BAR ===== */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;gap:14px;
+  padding:10px 18px;background:linear-gradient(180deg,rgba(20,12,5,.92),rgba(20,12,5,.55) 70%,transparent);
+  backdrop-filter:blur(2px)}
+.tb-brand{font-family:var(--fd);font-weight:800;color:var(--gold-bright);font-size:16px;letter-spacing:.04em;text-shadow:0 2px 6px #000;display:flex;align-items:center;gap:9px}
+.tb-brand img{width:26px}
+.tb-spacer{flex:1}
+.tb-prog{font-family:var(--fm);font-size:11px;color:var(--parch-2);display:flex;align-items:center;gap:8px}
+.tb-prog .bar{width:120px;height:7px;border-radius:5px;background:rgba(0,0,0,.5);border:1px solid var(--line);overflow:hidden}
+.tb-prog .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold-bright));transition:width .6s}
+.tb-btn{font-family:var(--fm);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--parch);
+  background:rgba(58,36,16,.7);border:1px solid var(--line);border-radius:30px;padding:8px 14px;cursor:pointer;transition:.2s;white-space:nowrap}
+.tb-btn:hover{background:var(--wood-2);color:var(--gold-bright);border-color:var(--gold)}
+.tb-btn.on{background:var(--green-deep);border-color:var(--green);color:var(--gold-bright)}
+
+/* ===== MAP SCREEN ===== */
+#map-screen{padding:78px 16px 120px}
+.map-head{text-align:center;max-width:760px;margin:0 auto 22px}
+.map-head h1{font-family:var(--fd);font-weight:800;color:var(--parch);font-size:clamp(26px,4.5vw,44px);text-shadow:0 3px 2px #000,0 0 30px rgba(236,192,106,.3)}
+.map-head p{font-family:var(--fb);font-style:italic;color:var(--parch-2);margin-top:8px;text-shadow:0 2px 8px #000;font-size:16px}
+.mapframe{max-width:1080px;margin:0 auto;position:relative;border:10px solid #231204;border-radius:14px;overflow:hidden;
+  box-shadow:0 30px 70px rgba(0,0,0,.85),inset 0 0 40px rgba(0,0,0,.6),0 0 50px rgba(185,142,59,.18);
+  background:#1a1208}
+.mapframe .mapimg{display:block;width:100%;height:auto;filter:sepia(.18) saturate(1.05) brightness(.92)}
+.mapframe svg.routes{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.node{position:absolute;transform:translate(-50%,-50%);cursor:pointer;z-index:5;
+  width:38px;height:38px;display:flex;align-items:center;justify-content:center}
+.node .dot{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#5a3a18,#241406);
+  border:2px solid var(--gold);box-shadow:0 0 0 4px rgba(20,12,5,.6),0 4px 10px rgba(0,0,0,.7);
+  font-family:var(--fd);font-weight:800;font-size:11px;color:var(--gold-bright);display:flex;align-items:center;justify-content:center;transition:.25s}
+.node:hover .dot{transform:scale(1.25);box-shadow:0 0 0 4px rgba(20,12,5,.6),0 0 22px var(--gold-bright)}
+.node.done .dot{background:radial-gradient(circle at 38% 30%,#bb4632,#7a1d14 70%);border-color:var(--gold-bright);color:#f3e4c2;
+  box-shadow:0 0 0 3px rgba(20,12,5,.5),0 3px 8px rgba(0,0,0,.6),inset 0 -2px 5px rgba(60,10,6,.6),inset 0 2px 3px rgba(255,180,150,.3)}
+.node.current .dot{animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(20,12,5,.6),0 0 10px var(--gold-bright)}50%{box-shadow:0 0 0 4px rgba(20,12,5,.6),0 0 26px var(--gold-bright)}}
+.node.stamp .dot{animation:stamp .55s cubic-bezier(.3,1.4,.5,1)}
+@keyframes stamp{0%{transform:scale(2.6) rotate(-12deg);opacity:0}50%{transform:scale(.82) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+.node.review .dot{border-color:var(--gold-bright);box-shadow:0 0 0 3px rgba(20,12,5,.5),0 0 14px var(--gold-bright)}
+.node .badge-r{position:absolute;top:-6px;right:-6px;width:15px;height:15px;border-radius:50%;background:var(--gold-bright);color:#3a1c08;
+  font-family:var(--fd);font-weight:800;font-size:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.6)}
+.fog{position:absolute;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:4;
+  width:88px;height:88px;background:radial-gradient(circle,rgba(28,22,14,.82) 30%,rgba(28,22,14,.3) 60%,transparent 73%);
+  filter:blur(5px);transition:opacity .8s}
+.routes .ink{transition:stroke-dashoffset 1.3s ease}
+.wanderer{position:absolute;transform:translate(-50%,-125%);z-index:7;pointer-events:none;color:var(--gold-bright);
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.9));animation:bob 2.6s ease-in-out infinite}
+.wanderer svg{width:24px;height:24px;display:block}
+@keyframes bob{0%,100%{transform:translate(-50%,-125%)}50%{transform:translate(-50%,-140%)}}
+.node .lbl{position:absolute;top:40px;left:50%;transform:translateX(-50%);white-space:nowrap;font-family:var(--fd);
+  font-size:11px;font-weight:700;color:var(--parch);background:rgba(20,12,5,.82);padding:3px 9px;border-radius:20px;
+  border:1px solid var(--line);opacity:0;transition:.2s;text-shadow:0 1px 3px #000;pointer-events:none}
+.node:hover .lbl{opacity:1}
+.map-note{text-align:center;font-family:var(--fm);font-size:11px;color:#b09a6e;letter-spacing:.18em;margin-top:18px}
+
+/* ===== CHAPTER SCREEN ===== */
+#chapter-screen{padding:78px 14px 60px}
+.book{max-width:1000px;margin:0 auto;position:relative;border-radius:5px;
+  padding:16px clamp(14px,3vw,32px) 30px;
+  background:
+    radial-gradient(circle at 16% 14%,rgba(150,108,46,.16),transparent 38%),
+    radial-gradient(circle at 84% 86%,rgba(120,82,32,.20),transparent 40%),
+    radial-gradient(circle at 62% 48%,rgba(184,152,92,.10),transparent 60%),
+    linear-gradient(158deg,#ecdcb4,#ddc794 55%,#cfb681);
+  border:1px solid rgba(74,48,18,.55);
+  box-shadow:0 30px 70px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,248,224,.3);
+  transition:box-shadow .8s}
+.book::before{content:"";position:absolute;inset:0;border-radius:5px;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:180px 180px;opacity:.07;mix-blend-mode:multiply}
+.book::after{content:"";position:absolute;inset:0;border-radius:5px;pointer-events:none;z-index:0;
+  box-shadow:inset 0 0 70px rgba(86,54,18,.38),inset 0 0 16px rgba(60,38,12,.5)}
+.book>*{position:relative;z-index:1}
+.book-brass{display:flex;align-items:center;justify-content:center;border-bottom:double 4px var(--rubric);padding:2px 8px 12px;margin-bottom:4px}
+.book-brass .rivets{display:none}
+.book-brass .actno{font-family:var(--fd);font-weight:700;font-size:13px;letter-spacing:.42em;color:var(--rubric);text-transform:uppercase;position:relative;padding:0 34px}
+.book-brass .actno::before,.book-brass .actno::after{content:"\2767";color:var(--gold);position:absolute;top:50%;transform:translateY(-52%);font-size:15px;opacity:.85}
+.book-brass .actno::before{left:6px}.book-brass .actno::after{right:6px;transform:translateY(-52%) scaleX(-1)}
+.page{background:none;border-radius:0;padding:18px clamp(4px,2vw,22px) 8px;margin-top:8px;position:relative}
+
+/* chapter hero */
+.ch-hero{display:flex;gap:24px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:8px}
+.ch-portrait{width:128px;height:128px;border-radius:50%;object-fit:cover;flex:none;
+  border:4px solid var(--gold);box-shadow:0 8px 22px rgba(0,0,0,.5),0 0 0 6px rgba(58,36,16,.35),0 0 26px rgba(236,192,106,.3)}
+.ch-hero .meta{flex:1;min-width:220px}
+.ch-loc{font-family:var(--fm);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--green)}
+.ch-title{font-family:var(--fd);font-weight:800;font-size:clamp(24px,4vw,38px);color:var(--ink);margin:4px 0 6px;line-height:1.05}
+.ch-guide{font-family:var(--fb);font-style:italic;color:var(--ink-soft);font-size:15px}
+.ch-guide b{color:var(--crimson);font-style:normal}
+
+/* narrative scene block */
+.scene{font-family:var(--fb);font-style:italic;font-size:clamp(17px,2.1vw,20px);line-height:1.75;color:#3a2a14;
+  margin:24px 0 28px;padding:20px 26px 18px;border-left:3px solid var(--gold);background:rgba(120,82,28,.06);position:relative}
+.scene p{margin:0 0 12px}
+.scene p:last-child{margin-bottom:0}
+.scene > p:first-of-type::first-letter{
+  font-family:'MedievalSharp',var(--fd);float:left;font-size:62px;line-height:.7;font-weight:400;font-style:normal;
+  color:var(--rubric);margin:8px 14px 0 0;padding:6px 10px;
+  background:radial-gradient(circle at 40% 30%,rgba(199,154,69,.35),rgba(140,100,40,.12));
+  border:1px solid var(--gold);box-shadow:inset 0 0 6px rgba(142,43,28,.25);
+  text-shadow:1px 1px 0 #fff8e6}
+
+/* decorative corners */
+.orn{position:absolute;font-family:var(--fd);color:var(--accent,#b9893b);opacity:.45;font-size:24px;line-height:1;pointer-events:none;z-index:2}
+.orn.tl{top:6px;left:12px}.orn.tr{top:6px;right:12px;transform:scaleX(-1)}
+.orn.bl{bottom:6px;left:12px;transform:scaleY(-1)}.orn.br{bottom:6px;right:12px;transform:scale(-1)}
+
+/* number tokens & law refs */
+.numtok{display:inline-block;font-family:var(--fb);font-weight:600;color:var(--rubric);
+  padding:0 6px;margin:0 1px;position:relative;white-space:nowrap;cursor:default;transition:transform .18s}
+.numtok::after{content:"";position:absolute;inset:-3px -2px;border:1.5px solid var(--rubric-soft);
+  border-radius:48% 52% 50% 50%/55% 48% 52% 45%;opacity:.55;transition:opacity .2s,transform .2s}
+.numtok:hover{transform:translateY(-1px)}
+.numtok:hover::after{opacity:.9;transform:rotate(-2deg) scale(1.04)}
+.lawref{font-family:var(--fb);font-style:italic;color:var(--rubric);border-bottom:1px dotted var(--rubric-soft);cursor:help;white-space:nowrap}
+
+/* law — tap to reveal */
+.law{cursor:pointer}
+.law .law-content{transition:filter .55s,opacity .55s,max-height .6s;max-height:420px;overflow:hidden}
+.law:not(.open){padding-bottom:30px}
+.law:not(.open) .law-content{filter:blur(5px);opacity:.4;max-height:44px}
+.law:not(.open)::after{content:"\25C9  dotknij, by odsłonić zapis prawa";position:absolute;left:0;right:0;bottom:9px;text-align:center;
+  font-family:var(--fm);font-size:11px;letter-spacing:.12em;color:var(--crimson)}
+.law{position:relative}
+.law.open{cursor:default}
+
+/* spójny tusz w rozdziale (kolor per rozdział żyje tylko w tle/runach) */
+#ch-page .beat h4::before{background:var(--gold)}
+#ch-page .beat h4{color:var(--rubric)}
+#ch-page .ch-portrait{border-color:var(--gold);box-shadow:0 8px 22px rgba(0,0,0,.4),0 0 0 5px rgba(120,82,28,.25)}
+#ch-page .ch-loc{color:var(--gold)}
+#ch-page .rune-box{border-color:var(--gold);box-shadow:0 0 26px rgba(156,115,39,.35),inset 0 0 20px rgba(0,0,0,.45)}
+
+/* scene fx canvas */
+#scene-fx{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0;transition:opacity .8s}
+
+/* rysowany sygil-runa (zastępuje kamień) */
+.sigil-wrap{display:inline-block;line-height:0}
+.sigil{display:block;width:100%;height:100%;filter:drop-shadow(0 0 5px currentColor)}
+.rune-box .sigil-wrap{width:62px;height:62px;flex:none;color:var(--accent,#ecc06a)}
+.runeitem .sigil-wrap{width:46px;height:46px;flex:none;color:var(--gold-bright)}
+#toast .sigil-wrap{width:24px;height:24px;color:var(--gold-bright)}
+
+/* iluminacje */
+.flourish{display:flex;align-items:center;justify-content:center;gap:14px;color:var(--gold);margin:14px 0;font-size:15px;opacity:.7}
+.flourish span{height:1px;width:70px;max-width:22vw;background:linear-gradient(90deg,transparent,var(--gold))}
+.flourish span:last-child{background:linear-gradient(90deg,var(--gold),transparent)}
+.margin-doodle{flex:none;width:58px;align-self:flex-start;margin-top:4px;opacity:.2;color:var(--ink-soft)}
+.margin-doodle svg{width:100%;height:auto;stroke:currentColor;fill:none;stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:760px){.margin-doodle{display:none}}
+.rune-box.fresh .sigil-wrap{animation:stamp .6s cubic-bezier(.3,1.4,.5,1)}
+.rune-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.ra{font-family:var(--fd);font-weight:600;font-size:12px;letter-spacing:.04em;color:var(--gold-bright);background:rgba(0,0,0,.25);
+  border:1px solid var(--gold);border-radius:3px;padding:6px 12px;cursor:pointer;transition:.2s}
+.ra:hover{background:rgba(0,0,0,.4)}
+.ra.on{background:var(--gold);color:#2a1a08}
+.ra.done{background:#4a5a2a;border-color:#6f8a3f;color:#f1e3c0}
+
+/* beats */
+.beat{margin:22px 0;opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}
+.beat.in{opacity:1;transform:none}
+.beat h4{font-family:var(--fd);font-weight:700;font-size:18px;letter-spacing:.02em;color:var(--rubric);margin:0 0 10px;display:flex;align-items:center;gap:10px}
+.beat h4::before{content:"";width:20px;height:1px;background:var(--gold);display:inline-block}
+.beat p{font-size:18px;line-height:1.7;margin:0 0 11px;color:var(--ink)}
+.beat ul{margin:6px 0 12px;padding-left:4px;list-style:none}
+.beat li{position:relative;padding:5px 0 5px 26px;font-size:17.5px;line-height:1.6;color:var(--ink)}
+.beat li::before{content:"\2767";position:absolute;left:2px;top:6px;color:var(--rubric-soft);font-size:13px;line-height:1}
+.beat h4 + ul{margin-top:0}
+.law{font-family:var(--fb);font-size:17px;line-height:1.62;background:rgba(142,43,28,.07);
+  border:1px solid rgba(142,43,28,.4);border-left:4px solid var(--rubric);border-radius:3px;padding:13px 18px;margin:14px 0;color:var(--ink);position:relative}
+.law::before{content:"\271D  ZAPIS PRAWA";font-family:var(--fm);font-weight:600;font-size:11px;letter-spacing:.28em;color:var(--rubric);display:block;margin-bottom:6px}
+.note{font-family:var(--fb);font-size:17px;line-height:1.62;background:rgba(120,82,28,.08);border:1px dashed var(--gold);border-radius:3px;padding:12px 16px;margin:14px 0;color:var(--ink)}
+.note b{color:var(--rubric)}
+.pill{display:inline-block;font-family:var(--fd);font-weight:600;font-size:12px;letter-spacing:.06em;background:transparent;color:var(--rubric);
+  border:1px solid var(--gold);border-radius:2px;padding:4px 11px;margin:3px 5px 3px 0}
+
+/* memory rune */
+.rune-box{margin:30px 0 6px;background:linear-gradient(135deg,#2a1a0a,#3f2814);border:2px solid var(--gold);border-radius:14px;
+  padding:20px 22px;display:flex;gap:18px;align-items:center;box-shadow:0 0 30px rgba(236,192,106,.2),inset 0 0 20px rgba(0,0,0,.5)}
+.rune-box img{width:60px;flex:none;filter:drop-shadow(0 0 10px rgba(236,192,106,.5))}
+.rune-box .rt{flex:1}
+.rune-box .rt .k{font-family:var(--fm);font-size:10px;letter-spacing:.3em;color:var(--gold-bright);text-transform:uppercase}
+.rune-box .rt .v{font-family:var(--fb);font-size:17px;line-height:1.5;color:var(--parch);margin-top:5px}
+.rune-box .rt .v b{color:var(--gold-bright)}
+
+/* chapter nav */
+.ch-nav{display:flex;justify-content:space-between;gap:12px;margin-top:30px;flex-wrap:wrap}
+.ch-nav button{font-family:var(--fd);font-weight:700;font-size:13px;letter-spacing:.08em;border-radius:2px;padding:12px 24px;cursor:pointer;border:1px solid var(--gold);transition:.2s;text-transform:uppercase}
+.nav-back{background:rgba(120,82,28,.08);color:var(--ink-soft)}
+.nav-back:hover{background:rgba(120,82,28,.18)}
+.nav-next{background:var(--rubric);color:#f1e3c0;border-color:var(--rubric)}
+.nav-next:hover{background:var(--rubric-soft);transform:translateY(-2px)}
+
+/* ===== BOTTOM DOCK (pergaminowe zakładki) ===== */
+.dock{position:fixed;bottom:0;left:0;right:0;z-index:40;display:flex;justify-content:center;align-items:flex-end;gap:5px;padding:10px 8px 0;flex-wrap:wrap;
+  background:linear-gradient(0deg,rgba(18,11,4,.96),rgba(18,11,4,.45) 72%,transparent)}
+.dock button{font-family:var(--fd);font-weight:600;font-size:12px;letter-spacing:.03em;color:#352511;
+  background:linear-gradient(180deg,#e9d6a8,#d3ba80);border:1px solid var(--gold);border-bottom:none;border-radius:4px 4px 0 0;
+  padding:9px 14px 9px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:7px;box-shadow:0 -3px 10px rgba(0,0,0,.35)}
+.dock button:hover{background:linear-gradient(180deg,#f3e4bd,#e3cd97);color:var(--rubric);transform:translateY(-4px)}
+.dock button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.dock .ic{font-size:14px}
+
+/* ===== MODAL ===== */
+.modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:20px;
+  background:rgba(8,5,2,.82);backdrop-filter:blur(3px)}
+.modal.open{display:flex;animation:fadeIn .35s both}
+.sheet{width:100%;max-width:860px;max-height:88vh;overflow-y:auto;border:1px solid rgba(74,48,18,.55);border-radius:5px;padding:0;
+  background:
+    radial-gradient(circle at 16% 14%,rgba(150,108,46,.16),transparent 38%),
+    radial-gradient(circle at 84% 86%,rgba(120,82,32,.2),transparent 40%),
+    linear-gradient(158deg,#ecdcb4,#ddc794 55%,#cfb681);
+  box-shadow:0 30px 80px rgba(0,0,0,.85),inset 0 0 70px rgba(86,54,18,.3)}
+.sheet-inner{background:none;border-radius:5px;padding:26px clamp(18px,3vw,38px) 32px;position:relative}
+.sheet h2{font-family:var(--fd);font-weight:800;font-size:26px;color:var(--rubric);text-align:center;margin-bottom:4px;letter-spacing:.03em}
+.sheet .sub{text-align:center;font-style:italic;color:var(--ink-soft);font-size:16px;margin-bottom:20px}
+.modal-close{position:absolute;top:6px;right:6px;width:38px;height:38px;border-radius:2px;border:1px solid var(--rubric);
+  background:var(--rubric);color:#f1e3c0;font-size:18px;cursor:pointer;z-index:5}
+.modal-close:hover{background:var(--rubric-soft)}
+.sheet::-webkit-scrollbar,.sheet-inner::-webkit-scrollbar{width:8px}
+.sheet::-webkit-scrollbar-thumb{background:var(--gold);border-radius:6px}
+
+/* flashcards */
+.fcat{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:18px}
+.fcat button{font-family:var(--fm);font-size:11px;letter-spacing:.08em;border:1px solid var(--gold);background:transparent;color:var(--ink-soft);border-radius:20px;padding:6px 12px;cursor:pointer;transition:.2s}
+.fcat button.on,.fcat button:hover{background:var(--green-deep);color:var(--gold-bright);border-color:var(--green)}
+.flashwrap{display:flex;flex-direction:column;align-items:center;gap:14px}
+.flashcard{width:100%;max-width:560px;height:230px;perspective:1400px;cursor:pointer}
+.flashcard .fc-inner{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
+.flashcard.flip .fc-inner{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:2px solid var(--gold);
+  background:linear-gradient(160deg,#fbf3de,#ecd9ad);box-shadow:0 14px 30px rgba(0,0,0,.4)}
+.fc-tag{font-family:var(--fm);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--crimson);margin-bottom:12px}
+.fc-q{font-family:var(--fd);font-weight:700;font-size:20px;color:var(--ink);line-height:1.35}
+.fc-back{transform:rotateY(180deg);background:linear-gradient(160deg,#efe0bb,#dcc187)}
+.fc-a{font-family:var(--fb);font-size:16.5px;line-height:1.5;color:#33230f}
+.fc-hint{font-family:var(--fm);font-size:10px;letter-spacing:.2em;color:var(--ink-soft);margin-top:14px;opacity:.7}
+.flashnav{display:flex;align-items:center;gap:16px}
+.flashnav button{font-family:var(--fd);font-weight:700;border:1px solid var(--gold);background:var(--wood-2);color:var(--gold-bright);border-radius:30px;padding:10px 20px;cursor:pointer}
+.flashnav button:hover{background:var(--green-deep)}
+.flashnav .count{font-family:var(--fm);font-size:13px;color:var(--ink-soft)}
+
+/* cases */
+.case-pick{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:8px}
+.case-pick button{font-family:var(--fd);font-weight:600;font-size:13px;border:1px solid var(--gold);background:linear-gradient(160deg,#fbf3de,#e8d4a6);color:var(--ink);border-radius:10px;padding:11px 16px;cursor:pointer;transition:.2s;text-align:left;max-width:240px}
+.case-pick button:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,.25)}
+.case-pick button .cb{display:block;font-family:var(--fm);font-size:9px;letter-spacing:.2em;color:var(--crimson);margin-bottom:4px}
+.case-body{margin-top:8px}
+.case-body .badge{font-family:var(--fm);font-size:10px;letter-spacing:.2em;color:var(--crimson)}
+.case-body h3{font-family:var(--fd);font-size:22px;color:var(--ink);margin:6px 0 12px}
+.case-scen{font-size:16px;line-height:1.6;background:rgba(63,104,63,.1);border:1px dashed var(--green);border-radius:8px;padding:14px 16px;color:#2c3f23}
+.case-hints{margin:14px 0}
+.case-hints summary{font-family:var(--fd);font-weight:700;cursor:pointer;color:var(--green-deep);font-size:15px}
+.case-hints ul{margin:10px 0 0;padding-left:6px;list-style:none}
+.case-hints li{padding:4px 0 4px 24px;position:relative;font-size:15px;color:#36240f}
+.case-hints li::before{content:"\003F";position:absolute;left:6px;color:var(--gold);font-weight:700}
+.case-verdict{display:none;margin-top:14px;background:linear-gradient(180deg,#f7eccf,#efddb4);border:1px solid var(--gold);border-left:5px solid var(--green);border-radius:8px;padding:16px 18px;font-size:16px;line-height:1.6;color:#33230f}
+.case-verdict.show{display:block;animation:fadeIn .5s both}
+.case-verdict::before{content:"\2696  WYROK";font-family:var(--fm);font-size:10px;letter-spacing:.25em;color:var(--green-deep);display:block;margin-bottom:8px}
+.reveal-btn{margin-top:14px;font-family:var(--fd);font-weight:700;background:linear-gradient(180deg,var(--gold-bright),var(--gold));color:#1c1206;border:none;border-radius:30px;padding:11px 22px;cursor:pointer}
+
+/* glossary */
+.gloss-search{width:100%;font-family:var(--fb);font-size:16px;padding:12px 16px;border:1px solid var(--gold);border-radius:30px;background:#fbf3de;color:var(--ink);margin-bottom:16px}
+.gloss-list{display:flex;flex-direction:column;gap:10px}
+.gloss-item{background:linear-gradient(160deg,#fbf3de,#ecd9ad);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:8px;padding:13px 16px}
+.gloss-item .term{font-family:var(--fd);font-weight:700;font-size:16px;color:var(--green-deep)}
+.gloss-item .def{font-size:15px;line-height:1.55;color:#36240f;margin-top:4px}
+
+/* runes list */
+.runelist{display:flex;flex-direction:column;gap:12px}
+.runeitem{display:flex;gap:14px;align-items:center;background:linear-gradient(135deg,#2a1a0a,#3f2814);border:1px solid var(--gold);border-radius:12px;padding:14px 16px;color:var(--parch)}
+.runeitem img{width:42px;flex:none;filter:drop-shadow(0 0 6px rgba(236,192,106,.4))}
+.runeitem .t{font-size:15.5px;line-height:1.5}
+.runeitem .t b{color:var(--gold-bright)}
+
+/* tryb: przed egzaminem */
+.exam-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
+.quiz-start-btn.alt{background:var(--rubric);color:#f1e3c0}
+.exam-sec{margin:14px 0}
+.exam-sec h3{font-family:var(--fd);font-size:14px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid var(--line);padding-bottom:5px}
+.exam-sec h3 span{opacity:.7;font-weight:600}
+.exam-sec h3.er{color:var(--rubric)} .exam-sec h3.ek{color:var(--green-deep)} .exam-sec h3.eu{color:var(--ink-soft)}
+.exam-item{display:flex;align-items:center;gap:12px;background:linear-gradient(160deg,#ecdcb4,#ddc18f);border:1px solid var(--line);border-radius:3px;padding:10px 12px;margin-bottom:8px}
+.ei-no{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:700;font-size:12px;color:var(--rubric)}
+.ei-body{flex:1;min-width:0}
+.ei-body b{font-family:var(--fd);font-size:15px;color:var(--ink)}
+.ei-rune{font-size:14.5px;line-height:1.45;color:var(--ink-soft);margin-top:2px}
+.ei-rune b{color:var(--rubric)}
+.ei-go{flex:none;font-family:var(--fd);font-weight:600;font-size:12px;border:1px solid var(--gold);background:transparent;color:var(--rubric);border-radius:3px;padding:7px 12px;cursor:pointer;transition:.2s}
+.ei-go:hover{background:var(--rubric);color:#f1e3c0}
+.quiz-retry.alt2{background:rgba(120,82,28,.15);color:#3a2510}
+
+/* quiz */
+.quiz-intro{text-align:center}
+.quiz-q{font-family:var(--fd);font-weight:700;font-size:19px;color:var(--ink);line-height:1.4;margin-bottom:6px}
+.quiz-prog{font-family:var(--fm);font-size:11px;letter-spacing:.2em;color:var(--ink-soft);text-align:center;margin-bottom:16px}
+.quiz-opts{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.quiz-opt{font-family:var(--fb);font-size:16px;text-align:left;border:1px solid var(--gold);background:linear-gradient(160deg,#fbf3de,#e8d4a6);color:var(--ink);border-radius:10px;padding:13px 16px;cursor:pointer;transition:.2s}
+.quiz-opt:hover{transform:translateX(4px);border-color:var(--green)}
+.quiz-opt.correct{background:linear-gradient(160deg,#cfe6bd,#a9cf8e);border-color:var(--green)}
+.quiz-opt.wrong{background:linear-gradient(160deg,#edb8ac,#d98a78);border-color:var(--crimson)}
+.quiz-opt.dim{opacity:.55}
+.quiz-expl{margin-top:14px;background:rgba(63,104,63,.1);border:1px dashed var(--green);border-radius:8px;padding:12px 15px;font-size:15px;line-height:1.55;color:#2c3f23;display:none}
+.quiz-expl.show{display:block;animation:fadeIn .4s both}
+.quiz-next{margin-top:18px;width:100%;font-family:var(--fd);font-weight:700;font-size:15px;background:linear-gradient(180deg,var(--gold-bright),var(--gold));color:#1c1206;border:none;border-radius:30px;padding:13px;cursor:pointer;display:none}
+.quiz-next.show{display:block}
+.quiz-result{text-align:center}
+.quiz-result .score{font-family:var(--fd);font-weight:900;font-size:64px;color:var(--green-deep);text-shadow:0 2px 0 var(--gold-bright)}
+.quiz-result .verdict{font-family:var(--fb);font-style:italic;font-size:19px;color:var(--ink);margin:8px 0 20px}
+.quiz-start-btn,.quiz-retry{font-family:var(--fd);font-weight:700;font-size:16px;background:linear-gradient(180deg,var(--gold-bright),var(--gold));color:#1c1206;border:none;border-radius:30px;padding:14px 30px;cursor:pointer;margin-top:10px}
+
+/* toast for rune collected */
+#toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%) translateY(30px);z-index:80;
+  background:linear-gradient(135deg,#2a1a0a,#3f2814);border:2px solid var(--gold);border-radius:40px;padding:12px 24px;
+  font-family:var(--fd);font-weight:700;color:var(--gold-bright);box-shadow:0 0 30px rgba(236,192,106,.5);opacity:0;transition:.4s;display:flex;align-items:center;gap:10px}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast img{width:26px}
+
+@media(max-width:640px){
+  .ch-portrait{width:96px;height:96px}
+  .tb-prog .bar{width:70px}
+  .tb-brand span.full{display:none}
+  .dock button{font-size:11px;padding:8px 11px}
+  .rune-box img{width:44px}
+}
+</style>
+</head>
+<body class="flicker">
+<div id="tint"></div>
+<div id="fire"></div>
+<canvas id="dust"></canvas>
+<canvas id="scene-fx"></canvas>
+<div class="vignette-edges"></div>
+
+<audio id="bgm" loop preload="none"><source src="Tome_of_the_Clockwork_Vault.mp3" type="audio/mpeg"></audio>
+
+<!-- ===================== INTRO ===================== -->
+<section id="intro" class="screen active">
+  <img src="tolkien_leaf.png" class="intro-leaf" alt="">
+  <div class="intro-kicker">Kronika Pióra</div>
+  <h1 class="intro-title">Wyprawa po <span class="em">Prawo Autorskie</span></h1>
+  <p class="intro-sub">Nie odpytka. Nie ściąga. <i>Wyprawa.</i> Przemierz Śródziemie od Bag End po Górę Przeznaczenia i odkryj, jak chroni się to, co stworzył ludzki umysł — krok po kroku, scena po scenie.</p>
+  <div class="intro-poem">
+    Jedno Pióro, by wszystkie spisać,<br>
+    Jedno Prawo, by je odnaleźć,<br>
+    Jedno Dzieło, by w mroku chronić<br>
+    i pamięcią na egzaminie związać.
+  </div>
+  <button class="btn-begin" onclick="startJourney()">Rozpocznij Wyprawę &nbsp;➤</button>
+  <div class="intro-hint">16 stacji • 34 karty wyroczni • 6 kazusów • Próba Ognia</div>
+</section>
+
+<!-- ===================== TOP BAR ===================== -->
+<div class="topbar" id="topbar" style="display:none">
+  <div class="tb-brand" onclick="showMap()" style="cursor:pointer"><img src="tolkien_leaf.png" alt=""><span class="full">Kronika Pióra</span></div>
+  <div class="tb-spacer"></div>
+  <div class="tb-prog" title="Zebrane runy">
+    <span id="prog-txt">0 / 16</span>
+    <div class="bar"><i id="prog-bar"></i></div>
+  </div>
+  <button class="tb-btn" id="sound-btn" onclick="toggleSound()">♪ Muzyka</button>
+</div>
+
+<!-- ===================== MAP ===================== -->
+<section id="map-screen" class="screen">
+  <div class="map-head">
+    <h1>Mapa Wyprawy</h1>
+    <p>Każda kraina kryje jedną prawdę o prawie autorskim. Podążaj szlakiem — runy zapalają się, gdy zdobędziesz wiedzę.</p>
+  </div>
+  <div class="mapframe">
+    <img src="tolkien_map.png" class="mapimg" alt="Mapa Śródziemia">
+    <svg class="routes" id="routes" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+    <div id="nodes"></div>
+  </div>
+  <div class="map-note">Kliknij stację, by wejść w scenę • Wracaj tu w dowolnej chwili</div>
+</section>
+
+<!-- ===================== CHAPTER ===================== -->
+<section id="chapter-screen" class="screen">
+  <div class="book">
+    <div class="book-brass">
+      <span class="actno" id="ch-actno">AKT I</span>
+      <span class="rivets"><i></i><i></i><i></i><i></i></span>
+    </div>
+    <div class="page" id="ch-page"><!-- filled by JS --></div>
+  </div>
+</section>
+
+<!-- ===================== DOCK ===================== -->
+<div class="dock" id="dock" style="display:none">
+  <button onclick="showMap()"><svg viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/></svg>Mapa</button>
+  <button onclick="openModal('flash')"><svg viewBox="0 0 24 24"><rect x="3.5" y="6.5" width="12" height="14" rx="1"/><path d="M8 4h11a1 1 0 0 1 1 1v13"/></svg>Karty Wyroczni</button>
+  <button onclick="openModal('cases')"><svg viewBox="0 0 24 24"><path d="M12 3.5v17M6 20.5h12M5.5 7l13-2"/><path d="M5.5 7 3 12.5a2.6 2.6 0 0 0 5 0L5.5 7zM18.5 5 16 10.5a2.6 2.6 0 0 0 5 0L18.5 5z"/></svg>Sąd w Bramie</button>
+  <button onclick="openModal('runes')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><text x="12" y="16" text-anchor="middle" font-size="11" stroke="none" fill="currentColor" font-family="Cinzel, serif">ᚱ</text></svg>Runy</button>
+  <button onclick="openModal('gloss')"><svg viewBox="0 0 24 24"><path d="M6 4h10a2 2 0 0 1 2 2v12a2 2 0 0 0 2 2H8a2 2 0 0 1-2-2V6a2 2 0 0 0-2-2h2zM9 9h7M9 13h6"/></svg>Leksykon</button>
+  <button onclick="openModal('exam')"><svg viewBox="0 0 24 24"><path d="M6 4h11a1.5 1.5 0 0 1 1.5 1.5V20H7.5A1.5 1.5 0 0 1 6 18.5V4zM9 9.5l2 2 4-4"/></svg>Przed egzaminem</button>
+  <button onclick="openModal('quiz')"><svg viewBox="0 0 24 24"><path d="M12 3c1 3-2 4-2 7a2 2 0 0 0 4 0c2 1.5 3 3.6 3 6a5 5 0 0 1-10 0c0-4 4-6 5-13z"/></svg>Próba Ognia</button>
+</div>
+
+<!-- ===================== MODAL ===================== -->
+<div class="modal" id="modal">
+  <div class="sheet">
+    <div class="sheet-inner" id="sheet-inner">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"><span class="sigil-wrap"><svg class="sigil" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="50" cy="50" r="46" stroke-width="2.5" opacity=".55"/><circle cx="50" cy="50" r="36" stroke-width="1" opacity=".3"/></g><text x="50" y="68" text-anchor="middle" font-family="Cinzel, serif" font-weight="700" font-size="48" fill="currentColor">ᚱ</text></svg></span>Runa pamięci zdobyta!</div>
+
+<script>
+/* ===================================================================
+   DANE WYPRAWY — pełna treść prawa autorskiego wpleciona w narrację
+   Każda stacja: no, loc (kraina), guide+portrait, scene (narracja),
+   beats (story + realne prawo), rune (klucz na egzamin), xy (pozycja na mapie %)
+   =================================================================== */
+const STATIONS = [
+{
+ no:"I", loc:"Bag End, Hobbiton", title:"Czym jest własność umysłu",
+ portrait:"tolkien_bilbo.png", guide:"Bilbo Baggins prowadzi cię do pierwszej prawdy",
+ xy:[16,30],
+ scene:`<p>„Siadaj, mój drogi. Zanim wyruszysz, musisz zrozumieć różnicę, której nikt mi nie wytłumaczył, gdy byłem młody.</p><p>Ten fotel jest mój — mogę go spalić. Ale ta opowieść, którą spisałem w Czerwonej Księdze… ona jest moja inaczej. To nie rzecz. To <i>przejaw umysłu</i>. I właśnie o takiej własności jest cała ta wyprawa."</p>`,
+ beats:[
+  {h:"Gałąź kompleksowa, nie samotna wieża", body:`<p>Bilbo wskazuje na mapę pełną dróg. <strong>Prawo własności intelektualnej</strong> to nie samodzielna gałąź — to <strong>gałąź kompleksowa</strong>. Czerpie definicje z prawa cywilnego, sposób karania z prawa karnego, a sięga też do gospodarczego i administracyjnego.</p>
+  <div class="law">Def. (Michniewicz, 2019): zespół norm regulujących zachowania społeczne wobec indywidualnych, dotychczas niespotykanych przejawów umysłu ludzkiego, których efektem jest powstanie oryginalnego dzieła w sferze kultury duchowej lub materialnej.</div>`},
+  {h:"Czym jest ochrona", body:`<p>„Ochrona", mówi Bilbo, „to strzeżenie dobra przed utratą, zaborem, kradzieżą." Podstawową ochronę daje <strong>państwo</strong> — przez normy prawne i możliwość ich wyegzekwowania przez organy: policję i sądy.</p>`},
+  {h:"Własność a posiadanie — fotel vs auto kolegi", body:`<ul>
+   <li><strong>Własność</strong> — pełne (z wyjątkami) władanie rzeczą: posiadanie, używanie, pobieranie dochodów, zbycie, a także zużycie lub zniszczenie.</li>
+   <li><strong>Posiadanie</strong> — używasz, ale rzecz nie jest twoja (auto kolegi): nie możesz jej sprzedać, a gdy zniszczysz — płacisz właścicielowi.</li>
+  </ul>
+  <div class="note"><b>Z wykładu:</b> pracę magisterską dzień przed obroną możesz posiadać, używać, a nawet zniszczyć — bo jesteś jej autorem. Poprawki promotora to sugestie; decyduje autor.</div>`},
+  {h:"Kultura duchowa vs materialna", body:`<ul>
+   <li><strong>Duchowa</strong> — ogół dzieł naukowych, literackich i sztuki danego okresu.</li>
+   <li><strong>Materialna</strong> — ogół dóbr materialnych i umiejętności produkcyjno-technicznych społeczeństwa.</li></ul>`}
+ ],
+ rune:`Prawo własności intelektualnej to <b>gałąź kompleksowa</b>. Pamiętaj parę: <b>własność</b> = pełne władanie (można zniszczyć/zbyć), <b>posiadanie</b> = używanie cudzej rzeczy.`
+},
+{
+ no:"II", loc:"Pod Zielonym Smokiem — Archiwum", title:"Trochę historii: od Gutenberga do statutu",
+ portrait:"tolkien_bilbo.png", guide:"Bilbo otwiera zakurzoną kronikę druku",
+ xy:[24,42],
+ scene:`<p>„Każda wielka opowieść ma swój początek. Prawo autorskie też. I — co cię zaskoczy — najpierw chroniono <i>nie</i> twórców, lecz tych, którzy ich dzieła powielali."</p>`,
+ beats:[
+  {h:"Od Gutenberga do przywilejów", body:`<ul>
+   <li><strong>1440</strong> — Gutenberg wynajduje prasę drukarską.</li>
+   <li><strong>XV w.</strong> — przywileje drukarskie; pierwsi ochroną objęci zostają <strong>księgarze, nie autorzy</strong>.</li>
+   <li><strong>Copyright</strong> — tak nazywano przywileje drukarskie w Anglii.</li>
+   <li><strong>XVI w.</strong> (Wenecja, 1544) — przywilej księgarza zaczyna zależeć od <strong>zgody autora</strong>.</li></ul>`},
+  {h:"Pierwsze ustawy autorskie", body:`<ul>
+   <li><strong>Anglia — Statut Królowej Anny (1710)</strong>: wyłączne prawo autora do decydowania o oddaniu dzieła do druku.</li>
+   <li><strong>Francja</strong> (Wolter, Diderot) — 1771 i 1773.</li>
+   <li><strong>USA (1790)</strong> — czasowe, wyłączne prawo autorów i wynalazców.</li>
+   <li><strong>XIX w.</strong> — rozwój ochrony <strong>własności przemysłowej</strong>.</li></ul>`}
+ ],
+ rune:`Pierwszą ustawą autorską był <b>Statut Królowej Anny (Anglia, 1710)</b>. Na początku chroniono <b>księgarzy, nie autorów</b>. Prasa Gutenberga: <b>1440</b>.`
+},
+{
+ no:"III", loc:"Rivendell — Rada Wolnych Ludów", title:"Konwencje międzynarodowe",
+ portrait:"tolkien_gandalf.png", guide:"Gandalf zwołuje narody przy stole rady",
+ xy:[40,34],
+ scene:`<p>„Gdy dzieło przekracza granice królestw, jedno prawo nie wystarczy. Dlatego — jak narody Śródziemia przy stole Elronda — państwa zawarły <i>konwencje</i>. Posłuchaj uważnie, bo egzaminator lubi tu zastawiać pułapki na liczbach."</p>`,
+ beats:[
+  {h:"Konwencja paryska (1883) — własność przemysłowa", body:`<ul>
+   <li>Podpisana <strong>20 marca 1883</strong> — dotyczy <strong>własności przemysłowej</strong>.</li>
+   <li>Powołała Międzynarodowy Związek Ochrony Własności Przemysłowej — pierwszą taką organizację (177 państw).</li>
+   <li>Polska przystąpiła do Związku w <strong>1919 r.</strong>, samą konwencję podpisała 1931. Spory — Trybunał w Hadze.</li>
+   <li>Każde państwo-strona daje obywatelom innych stron <strong>taką samą ochronę</strong> jak swoim.</li></ul>`},
+  {h:"Konwencja berneńska (1886) — prawa autorskie", body:`<ul>
+   <li>Podpisana <strong>9 września 1886</strong> — <strong>prawa autorskie</strong>; z inspiracji <strong>Victora Hugo</strong> (autora „Nędzników").</li>
+   <li>Zasady: <strong>minimum ochrony</strong> i <strong>asymilacji</strong> (twórca z innego kraju traktowany na równi).</li>
+   <li>Minimalny czas: <strong>życie autora + 50 lat</strong>. Ochrona <strong>automatyczna</strong> — bez zgłoszenia.</li></ul>
+   <div class="note"><b>Pułapka:</b> berneńska = <b>min. 50 lat</b>, ale polska ustawa = <b>70 lat</b>. Czytaj, czy pytanie dotyczy konwencji, czy polskiego prawa.</div>`},
+  {h:"WIPO i TRIPS", body:`<ul>
+   <li><strong>WIPO</strong> — agenda ONZ, siedziba w <strong>Genewie</strong>, konwencja sztokholmska 1967, 192 państwa.</li>
+   <li><strong>TRIPS</strong> — porozumienie ws. handlowych aspektów własności intelektualnej, <strong>1994</strong>, załącznik do porozumienia o utworzeniu <strong>WTO</strong>.</li></ul>`}
+ ],
+ rune:`<b>Paryska (1883)</b> = własność przemysłowa. <b>Berneńska (1886, Victor Hugo)</b> = prawa autorskie, min. <b>życie + 50 lat</b>, ochrona automatyczna. <b>WIPO</b> w Genewie, <b>TRIPS 1994</b> przy WTO.`
+},
+{
+ no:"IV", loc:"Kroniki Królestwa", title:"Prawo autorskie w Polsce",
+ portrait:"tolkien_arwen.png", guide:"Arwen, strażniczka pamięci, recytuje dzieje rodzimego prawa",
+ xy:[52,26],
+ scene:`<p>„Każde królestwo spisuje własne prawa. Posłuchaj, jak rodziło się prawo autorskie w Polsce — od poetów, przez zaborców, aż po ustawę, która obowiązuje do dziś."</p>`,
+ beats:[
+  {h:"Poeci i pierwsza ustawa", body:`<ul>
+   <li><strong>1918</strong> — Tuwim, Brzechwa i Słonimski powołują <strong>ZAiKS</strong>.</li>
+   <li><strong>Ustawa z 29 marca 1926</strong> (Zoll, Litauer) — pierwsza polska ustawa; ochrona <strong>50 lat</strong> po śmierci.</li>
+   <li><strong>PRL — nowela 1952</strong>: ograniczenie do <strong>20 lat</strong>; umowy często niekorzystne (prawa na podmioty państwowe).</li></ul>`},
+  {h:"Polskie źródła prawa", body:`<ul>
+   <li>Ustawy zaborcze — Rosja (1857), Austria (1895), Prusy (1907).</li>
+   <li>Pierwsza polska ustawa — 1926 r.</li>
+   <li><strong>Ustawa o prawie autorskim i prawach pokrewnych z 4 lutego 1994</strong> (<strong>PrAut</strong>).</li>
+   <li><strong>Ustawa — Prawo własności przemysłowej z 2000</strong> (<strong>PrWłPrz</strong>).</li></ul>`}
+ ],
+ rune:`Obowiązuje <b>Ustawa o prawie autorskim i prawach pokrewnych z 4 lutego 1994 (PrAut)</b>. Pierwsza polska: <b>1926</b> (50 lat). PRL skrócił do <b>20 lat</b>. ZAiKS — <b>1918</b> (Tuwim, Brzechwa, Słonimski).`
+},
+{
+ no:"V", loc:"Kuźnie Eregionu — Narodziny Dzieła", title:"Utwór — przedmiot ochrony",
+ portrait:"tolkien_gandalf.png", guide:"Gandalf pokazuje, co czyni dzieło — Dziełem",
+ xy:[46,48],
+ scene:`<p>„Nie każdy przedmiot to utwór, tak jak nie każdy pierścień to <i>Ten</i> Pierścień. By powstało dzieło chronione prawem, musi spełnić trzy warunki. Zapamiętaj je jak zaklęcie."</p>`,
+ beats:[
+  {h:"Definicja — serce całego prawa", body:`<div class="law">Art. 1 ust. 1 PrAut: Przedmiotem prawa autorskiego jest każdy przejaw działalności twórczej o indywidualnym charakterze, ustalony w jakiejkolwiek postaci, niezależnie od wartości, przeznaczenia i sposobu wyrażenia (utwór).</div>
+  <p>Trzy cechy, bez których nie ma utworu: <span class="pill">działalność twórcza</span><span class="pill">indywidualny charakter</span><span class="pill">ustalenie</span></p>
+  <ul>
+   <li><strong>Działalność twórcza</strong> — kreatywność, wkład intelektualny.</li>
+   <li><strong>Indywidualny charakter</strong> — niepowtarzalność, <strong>osobiste piętno twórcy</strong>.</li>
+   <li><strong>Ustalenie</strong> — uzewnętrznienie tak, by osoby trzecie mogły dowiedzieć się, że utwór istnieje (art. 1 ust. 3 — wtedy powstają prawa).</li></ul>`},
+  {h:"Idea ≠ utwór", body:`<div class="note"><b>Idea ≠ utwór.</b> Idee, procedury, odkrycia, metody — o ile nie zostaną spisane — <b>nie są chronione</b>. Chroniona jest forma, nie pomysł. Pamiętaj też: <b>inspiracja ≠ naruszenie</b>.</div>`},
+  {h:"Co może być utworem (katalog otwarty)", body:`<ul>
+   <li>Słowne, publicystyczne, naukowe, programy komputerowe; plastyczne, fotograficzne, lutnicze (dzwon Tuba Dei), architektoniczne; muzyczne, sceniczne, choreograficzne, audiowizualne.</li>
+   <li>Katalog <strong>nie jest zamknięty</strong> — rozstrzyga sąd. SN uznał za utwór m.in. książkę kucharską, instrukcję obsługi, rozkład jazdy.</li>
+   <li>Chronione też <strong>opracowania</strong> (tłumaczenie, adaptacja) oraz <strong>zbiory/bazy danych</strong> o twórczym doborze i układzie.</li></ul>`}
+ ],
+ rune:`Utwór = <b>działalność twórcza + indywidualny charakter + ustalenie</b> (art. 1 PrAut). Katalog <b>otwarty</b>. <b>Idea ≠ utwór</b> — chroniona jest forma, nie pomysł.`
+},
+{
+ no:"VI", loc:"Ogród Sama — Każda Dłoń Tworzy", title:"Twórca — podmiot ochrony",
+ portrait:"tolkien_sam.png", guide:"Samwise dowodzi, że twórcą może być każdy",
+ xy:[30,56],
+ scene:`<p>„Jestem tylko ogrodnikiem, paniczu. Ale gdybym ułożył pieśń o tych różach — byłbym twórcą tak samo, jak każdy elficki bard. Prawo nie pyta o wykształcenie ani o wiek."</p>`,
+ beats:[
+  {h:"Kto może być twórcą", body:`<ul>
+   <li>Twórcą może być <strong>każda osoba fizyczna</strong> — bez wymogów formalnych, bez rejestracji.</li>
+   <li>Także osoba niewykształcona, niepełnoletnia, ubezwłasnowolniona — bez względu na wiek i pochodzenie.</li></ul>`},
+  {h:"Domniemanie autorstwa", body:`<p>Za twórcę uznaje się osobę, której <strong>nazwisko uwidoczniono na egzemplarzu</strong> (autor na okładce, podpis malarza) albo której autorstwo podano do publicznej wiadomości.</p>
+  <p><strong>Współtwórca</strong> ma <strong>taką samą ochronę</strong> jak twórca — przy dwóch autorach prawa są wspólne.</p>
+  <div class="note"><b>Zakres podmiotowy (art. 5):</b> chronione utwory twórcy będącego obywatelem polskim lub UE/EOG; opublikowane po raz pierwszy w RP (lub równocześnie tu i za granicą); opublikowane po raz pierwszy po polsku; albo chronione umową międzynarodową.</div>`}
+ ],
+ rune:`Twórcą może być <b>każda osoba fizyczna</b> — bez rejestracji, bez względu na wiek/wykształcenie. <b>Domniemanie autorstwa</b>: ten, czyje nazwisko widnieje na egzemplarzu.`
+},
+{
+ no:"VII", loc:"Więź Powiernika", title:"Autorskie prawa osobiste",
+ portrait:"tolkien_frodo.png", guide:"Frodo zna więź, której nie da się przekazać",
+ xy:[60,52],
+ scene:`<p>„Pierścień stał się częścią mnie — i choćbym chciał, pewnej więzi nie mogłem nikomu oddać. Tak samo jest z więzią twórcy i jego dzieła. <i>Autorskie prawa osobiste</i> są wieczne i niezbywalne. A kto je depcze, kradnąc cudze dzieło — staje się jak Gollum."</p>`,
+ beats:[
+  {h:"Więź twórcy z utworem", body:`<p>Chronią <strong>więź twórcy z utworem</strong>. Czas <strong>nieograniczony</strong>, są <strong>niezbywalne</strong>, trwają po śmierci twórcy.</p>
+  <ul>
+   <li>Prawo do <strong>autorstwa</strong> utworu.</li>
+   <li>Prawo do oznaczenia <strong>nazwiskiem lub pseudonimem</strong>.</li>
+   <li>Prawo do <strong>nadzoru</strong> nad sposobem korzystania.</li>
+   <li>Prawo do decydowania o <strong>pierwszym udostępnieniu</strong>.</li>
+   <li>Prawo do <strong>nienaruszalności treści i formy</strong>.</li></ul>
+   <div class="note"><b>Reprezentacja po śmierci:</b> jeśli twórca nie wskaże osoby — reprezentuje go <b>małżonek</b>, dalej: zstępni (dzieci, wnuki), rodzice, rodzeństwo. Gdy brak — ustala sąd.</div>`},
+  {h:"Plagiat — kradzież więzi", body:`<div class="law">Plagiat = kradzież w jakiejkolwiek formie cudzego utworu lub jego części i przedstawienie pod własnym nazwiskiem.</div>
+  <p>Rodzaje: <strong>jawny</strong> (kopia 1:1 pod swoim nazwiskiem), <strong>ukryty</strong> (zmiana słów, ten sam sens, bez cytowania), <strong>funkcjonalny</strong> (tłumaczenie bez podania źródła).</p>`},
+  {h:"Ochrona praw osobistych", body:`<ul>
+   <li><strong>Niezawinione</strong> (art. 78 ust. 1) — żądanie zaniechania, usunięcia skutków.</li>
+   <li><strong>Zawinione</strong> — zadośćuczynienie lub suma na cel społeczny.</li>
+   <li><strong>Art. 115 PrAut</strong> — przywłaszczenie autorstwa: grzywna, ograniczenie wolności albo pozbawienie wolności <strong>do lat 3</strong>.</li></ul>`}
+ ],
+ rune:`Prawa <b>osobiste</b> = więź twórcy z dziełem: <b>bezterminowe i niezbywalne</b>. Plagiat (jawny/ukryty/funkcjonalny) → art. 115: do <b>3 lat</b> więzienia.`
+},
+{
+ no:"VIII", loc:"Skarbiec Ereboru", title:"Autorskie prawa majątkowe",
+ portrait:"tolkien_smaug.png", guide:"Smaug strzeże skarbu — czyli praw o wartości złota",
+ xy:[72,40],
+ scene:`<p>„Złoto. Wszystko sprowadza się do złota, mały złodzieju." Smok rozprostowuje skrzydła nad stosem monet. „Prawa <i>majątkowe</i> to ekonomiczna strona dzieła — można je sprzedać, odziedziczyć, zarobić na nich. Ale nawet smoczy skarb nie jest wieczny: po <b>siedemdziesięciu latach</b> wszystko trafia do domeny publicznej."</p>`,
+ beats:[
+  {h:"Trzy filary praw majątkowych", body:`<p>Prawa o charakterze ekonomicznym:</p>
+  <ul>
+   <li>Prawo do <strong>wynagrodzenia</strong> za korzystanie.</li>
+   <li>Prawo do <strong>korzystania</strong> z utworu (korzyść materialna lub niematerialna).</li>
+   <li>Prawo do <strong>rozporządzania</strong> utworem (dysponowanie, zarządzanie).</li></ul>`},
+  {h:"Jak przechodzą na innych", body:`<ul><li>Przez <strong>dziedziczenie</strong>.</li><li>Na podstawie <strong>umowy</strong>.</li><li>Przez <strong>przejęcie utworu przez pracodawcę</strong> (utwór pracowniczy).</li></ul>`},
+  {h:"Kluczowa liczba: 70 lat", body:`<div class="note"><b>Kluczowa liczba:</b> prawa majątkowe <b>gasną z upływem 70 lat</b> — liczone <b>od końca roku</b> śmierci twórcy (przy współautorstwie — od śmierci tego, który przeżył pozostałych). Utwór audiowizualny: od śmierci najpóźniej zmarłej z osób — <b>reżysera, autora scenariusza, dialogów, kompozytora</b> muzyki. Utwór o nieznanym twórcy — od pierwszego rozpowszechnienia.</div>
+  <div class="note"><b>Przykład:</b> prawa do „Mein Kampf" wygasły <b>31 grudnia 2015</b> (70 lat od śmierci autora) — od 1.01.2016 w domenie publicznej.</div>`}
+ ],
+ rune:`Prawa <b>majątkowe</b>: wynagrodzenie + korzystanie + rozporządzanie. Zbywalne i dziedziczne. Gasną po <b>70 latach</b> od końca roku śmierci twórcy.`
+},
+{
+ no:"IX", loc:"Pakty i Przysięgi", title:"Licencje",
+ portrait:"tolkien_legolas.png", guide:"Legolas — precyzja łucznika w precyzji umów",
+ xy:[66,62],
+ scene:`<p>„Słowo wypowiedziane w wietrze ginie. Słowo spisane — wiąże. Licencja to pakt o korzystaniu z cudzego dzieła, i jak każdy poważny pakt — <i>musi być na piśmie</i>."</p>`,
+ beats:[
+  {h:"Czym jest licencja", body:`<ul>
+   <li>Umowa o korzystanie z utworu = <strong>licencja</strong>. Musi być <strong>na piśmie</strong> — ustna nie ma skutków prawnych.</li>
+   <li><strong>Wyłączna</strong> — jeden podmiot dostaje wyłączność korzystania.</li>
+   <li><strong>Niewyłączna</strong> — twórca może udzielić licencji w tym samym zakresie wielu podmiotom.</li></ul>`},
+  {h:"Czas i terytorium", body:`<ul>
+   <li>Domyślnie <strong>5 lat</strong>, na terytorium siedziby licencjobiorcy (siedziba w Paryżu → korzystanie we Francji).</li>
+   <li>Warunki można zmienić umownie (np. 10 lat). Po terminie licencja <strong>wygasa</strong>.</li></ul>
+   <div class="note"><b>Przykład (art. 15(1)):</b> uczelni przysługuje pierwszeństwo publikacji pracy dyplomowej; jeśli nie opublikuje w 6 mies. od obrony — autor może sam (chyba że to część utworu zbiorowego).</div>`}
+ ],
+ rune:`Licencja musi być <b>na piśmie</b> (ustna = brak skutków). <b>Wyłączna</b> vs <b>niewyłączna</b>. Domyślnie <b>5 lat</b>, na terytorium siedziby licencjobiorcy.`
+},
+{
+ no:"X", loc:"Ścieżki Wolnego Ludu", title:"Ograniczenia ochrony i dozwolony użytek",
+ portrait:"tolkien_merry_pippin.png", guide:"Merry i Pippin — sztuka pożyczania bez kradzieży",
+ xy:[40,68],
+ scene:`<p>„Podwędziliśmy Gandalfowi fajkowe ziele — na własny użytek, ma się rozumieć!" śmieje się Pippin. „Prawo też pozwala czasem korzystać z cudzego dzieła bez pytania o zgodę — ale tylko gdy cel jest <i>prywatny</i>, nie zarobkowy."</p>`,
+ beats:[
+  {h:"Ograniczenia czasowe", body:`<p>Prawa majątkowe gasną po <strong>70 latach</strong>; prawa osobiste — bezterminowo.</p>`},
+  {h:"Dozwolony użytek osobisty", body:`<p>Wolno — bez zezwolenia twórcy i nieodpłatnie — korzystać z rozpowszechnionego utworu w zakresie własnego użytku osobistego (kupioną książką może swobodnie cieszyć się rodzina).</p>
+  <div class="note"><b>Kryterium komercyjności jest decydujące.</b> Cel prywatny/niekomercyjny (z podaniem autora i źródła) bywa dozwolony; cel komercyjny zawsze wymaga zgody twórcy i wynagrodzenia.</div>`},
+  {h:"Cytat", body:`<p><strong>Cytat</strong> = dosłowne przytoczenie cudzego utworu. Legalny, gdy: utwór rozpowszechniony, wskazano <strong>autora i źródło</strong>, a cytat <strong>służy celowi</strong> (analiza, polemika).</p>`},
+  {h:"Autoplagiat", body:`<p>Formalnie nie da się ukraść własnego utworu, ale autoplagiat prowadzi do <strong>nierzetelności naukowej</strong>, <strong>podwójnej publikacji</strong> i <strong>zawyżania dorobku</strong>.</p>`}
+ ],
+ rune:`<b>Dozwolony użytek osobisty</b> — bez zgody i za darmo, ale cel <b>niekomercyjny</b> (kryterium komercyjności decyduje). <b>Cytat</b> legalny, gdy podasz autora, źródło i służy celowi.`
+},
+{
+ no:"XI", loc:"Palantíry — Widzące Kamienie", title:"Internet a prawo autorskie",
+ portrait:"tolkien_gandalf.png", guide:"Gandalf ostrzega przed kamieniami, które widzą wszystko",
+ xy:[78,56],
+ scene:`<p>„Palantír pokazuje cały świat — ale i cały świat widzi przez niego ciebie. Internet jest taki sam. Umieścić tam dzieło to <i>udostępnić je publicznie</i>. Zapamiętaj jedno zdanie, które ratuje na egzaminie: <b>pobieranie — tak, udostępnianie — nie</b>."</p>`,
+ beats:[
+  {h:"Publiczne udostępnienie", body:`<p>Umieszczenie dzieła na stronie to <strong>publiczne udostępnienie</strong> — dla nieokreślonej liczby osób.</p>
+  <p><strong>Rozpowszechnienie</strong> (zamieszczanie w sieci) jest <strong>nielegalne</strong>, gdy właściciel serwera udostępnia utwór bez zgody twórcy.</p>`},
+  {h:"Własna strona, cudzy utwór", body:`<p>Strona <strong>niekomercyjna</strong> z cudzym obrazem jako tłem — dozwolony użytek, ale trzeba podać <strong>imię, nazwisko twórcy i źródło</strong>. Tło reklamujące <strong>firmę</strong> — cel komercyjny: potrzebna zgoda, umowa i wynagrodzenie. <strong>Kryterium komercyjności decyduje.</strong></p>`},
+  {h:"Ściąganie i P2P", body:`<div class="law">Zasada: pobieranie — TAK, udostępnianie — NIE.</div>
+  <ul>
+   <li><strong>Pobieranie</strong> legalne w ramach użytku własnego (film obejrzysz sam, z rodziną, puścisz studentom).</li>
+   <li><strong>Udostępnianie</strong> ściągniętych utworów nielegalne — odpłatnie czy nie.</li>
+   <li><strong>P2P</strong> (BitTorrent, Pirate Bay): pobierasz i jednocześnie udostępniasz → ściąganie nielegalne = <strong>piractwo</strong>.</li></ul>`}
+ ],
+ rune:`Internet w jednym zdaniu: <b>pobieranie TAK, udostępnianie NIE</b>. <b>P2P = piractwo</b>, bo pobierając jednocześnie udostępniasz. O legalności tła strony decyduje <b>komercyjność</b>.`
+},
+{
+ no:"XII", loc:"Gildie i Włodarze", title:"Organizacje zbiorowego zarządzania",
+ portrait:"tolkien_gimli.png", guide:"Gimli o gildiach, które bronią praw rzemieślnika",
+ xy:[58,74],
+ scene:`<p>„U nas, krasnoludów, gildia broni rzemieślnika, gdy ten sam nie da rady. Twórcy mają swoje gildie — <i>organizacje zbiorowego zarządzania</i>. Ale uwaga: zajmą się tobą dopiero, gdy <b>podpiszesz umowę</b>."</p>`,
+ beats:[
+  {h:"Czym są i jak działają", body:`<p>Pomagają twórcy zarządzać prawami, zwłaszcza gdy chce być anonimowy. Organizacja zajmie się ochroną dopiero po <strong>podpisaniu umowy</strong> (art. 21). Działają na <strong>zezwolenie ministra kultury</strong>.</p>`},
+  {h:"Zadania", body:`<ul><li>Zbiorowy zarząd prawami.</li><li>Zawieranie umów (licencji).</li><li>Pobór, podział i wypłata przychodów.</li><li>Monitoring i dochodzenie ochrony.</li></ul>
+  <div class="note"><b>Komisja Prawa Autorskiego:</b> spór twórcy z organizacją idzie najpierw do mediacji; brak ugody — rozstrzyga Komisja.</div>
+  <p><span class="pill">ZAiKS</span><span class="pill">ZASP</span><span class="pill">SFP</span><span class="pill">SAFT</span><span class="pill">„Polska Książka"</span></p>`}
+ ],
+ rune:`Organizacje zbiorowego zarządzania działają na <b>zezwolenie ministra kultury</b> i chronią twórcę dopiero <b>po podpisaniu umowy</b> (art. 21). Spory: <b>Komisja Prawa Autorskiego</b>. Przykład: <b>ZAiKS</b>.`
+},
+{
+ no:"XIII", loc:"Lothlórien — Dary Wolnego Ludu", title:"Creative Commons",
+ portrait:"tolkien_arwen.png", guide:"Arwen o sztuce dawania — z zachowaniem pewnych praw",
+ xy:[44,80],
+ scene:`<p>„Galadriela obdarowała Drużynę, nie żądając niczego — lecz każdy dar miał swój sens i warunek. Tak działa <i>Creative Commons</i>: twórca mówi nie »wszystkie prawa zastrzeżone«, lecz »<b>pewne prawa zastrzeżone</b>«."</p>`,
+ beats:[
+  {h:"Idea i twórca", body:`<ul>
+   <li>Organizacja non-profit, założona <strong>2001</strong> przez <strong>Lawrence'a Lessiga</strong>.</li>
+   <li>Daje darmowe narzędzia prawne — twórca sam ustala warunki udostępniania.</li>
+   <li>Zasada <strong>„pewne prawa zastrzeżone"</strong> — w kontrze do „wszystkie prawa zastrzeżone".</li></ul>`},
+  {h:"Cztery warunki", body:`<ul>
+   <li><strong>Uznanie autorstwa</strong> (BY).</li>
+   <li><strong>Użycie niekomercyjne</strong> (NC).</li>
+   <li><strong>Na tych samych warunkach</strong> (SA).</li>
+   <li><strong>Bez utworów zależnych</strong> (ND).</li></ul>`}
+ ],
+ rune:`Creative Commons: <b>„pewne prawa zastrzeżone"</b>, założył <b>Lawrence Lessig (2001)</b>. Cztery warunki: <b>BY, NC, SA, ND</b>.`
+},
+{
+ no:"XIV", loc:"Kuźnie Krasnoludów", title:"Własność przemysłowa",
+ portrait:"tolkien_gimli.png", guide:"Gimli prowadzi do kuźni patentów i wzorów",
+ xy:[80,72],
+ scene:`<p>„Tutaj, w huku młotów, rządzą inne reguły niż wśród bardów. W prawie autorskim wystarczy <i>ustalić</i> dzieło. Tu — musisz je <b>zgłosić</b> w Urzędzie Patentowym. Kto pierwszy zgłosi, ten ma prawo. A teraz — liczby, które egzaminator kocha."</p>`,
+ beats:[
+  {h:"Naczelne pojęcie i różnica w ochronie", body:`<p>Naczelne pojęcie to <strong>projekt wynalazczy</strong>. Katalog jest <strong>zamknięty</strong>: wynalazki, wzory użytkowe, wzory przemysłowe, topografia układów scalonych, projekty racjonalizatorskie; nadto oznaczenia geograficzne i znaki towarowe.</p>
+  <div class="note"><b>Różnica w powstaniu ochrony:</b> prawo autorskie — wystarczy <b>ustalenie</b>. Własność przemysłowa — trzeba <b>zgłoszenia</b> (kto pierwszy zgłosi). Organ: <b>Urząd Patentowy</b>.</div>`},
+  {h:"Wynalazek → patent (20 lat)", body:`<p>Rozwiązanie techniczne, <strong>nowe</strong>, o poziomie wynalazczym, nadające się do zastosowania przemysłowego. Wynalazkami <strong>nie są</strong>: odkrycia, teorie, metody matematyczne, ciało ludzkie. Ochrona <strong>20 lat</strong> od zgłoszenia. Patent zbywalny i dziedziczny.</p>`},
+  {h:"Wzór użytkowy → prawo ochronne (10 lat)", body:`<p>Nowe, techniczne rozwiązanie dot. kształtu/budowy przedmiotu o trwałej postaci (np. kształt trzepaczki miksera). Musi mieć <strong>cechę techniczną</strong>. Ochrona <strong>10 lat</strong>.</p>`},
+  {h:"Wzór przemysłowy → prawo z rejestracji (25 lat)", body:`<p>Nowa, o <strong>indywidualnym charakterze</strong> postać wytworu (linie, kontury, kolor, faktura — np. flakon perfum). <strong>Nie wymaga techniczności</strong>. Ochrona <strong>25 lat</strong>.</p>`},
+  {h:"Znak towarowy → prawo ochronne (10 lat, przedłużalne)", body:`<p>Oznaczenie odróżniające towary (logo). Może być wyraz, rysunek, kolor, forma przestrzenna, a nawet <strong>dźwięk</strong>. Ochrona <strong>10 lat</strong>, przedłużalna o kolejne dekady.</p>
+  <div class="law">Ściąga: wynalazek → patent 20 lat · wzór użytkowy → 10 lat · wzór przemysłowy → 25 lat · znak towarowy → 10 lat (przedłużalne).</div>`}
+ ],
+ rune:`Własność przemysłowa: katalog <b>zamknięty</b>, ochrona przez <b>zgłoszenie w Urzędzie Patentowym</b>. Liczby: <b>patent 20</b> · <b>wzór użytkowy 10</b> · <b>wzór przemysłowy 25</b> · <b>znak towarowy 10 (przedłużalny)</b>.`
+},
+{
+ no:"XV", loc:"Sąd u Bram", title:"Kazus Reksia — pola eksploatacji",
+ portrait:"tolkien_gandalf.png", guide:"Gandalf prowadzi rozprawę o psie, który przeżył twórcę",
+ xy:[88,62],
+ scene:`<p>„Posłuchaj prawdziwej sprawy, bo to modelowy kazus. Pies Reksio — postać, która przeżyła swojego twórcę i wywołała spór, jakiego prawnicy nie rozstrzygnęli przez lata. Tu zderzają się prawa osobiste, majątkowe i <i>pola eksploatacji</i>."</p>`,
+ beats:[
+  {h:"Oś czasu sporu", body:`<ul>
+   <li><strong>1967</strong> — pierwszy odcinek; Studio Filmów Rysunkowych, Bielsko-Biała.</li>
+   <li><strong>1977</strong> — Lechosław Marszałek przenosi <strong>prawa majątkowe</strong> na SFR.</li>
+   <li><strong>1991</strong> — śmierć Marszałka; testament → wdowa.</li>
+   <li><strong>2017</strong> — wdowa wszczyna proces o ustalenie praw.</li>
+   <li><strong>2021</strong> — I instancja: jedyny właściciel to SFR.</li>
+   <li><strong>2025</strong> — II instancja: wdowie przysługują prawa <strong>majątkowe</strong> na <strong>pozafilmowych polach eksploatacji</strong> (gadżety); Studio zachowuje streaming.</li></ul>`},
+  {h:"Sedno wyroku", body:`<div class="note"><b>Sedno:</b> umowa z 1977 objęła pola filmowe; postać żyje też poza filmem (merchandising) — tam prawa wróciły do spadkobierczyni. Zakres przeniesienia praw czyta się <b>ściśle</b>: czego umowa nie wymieniła, zostaje przy twórcy/spadkobiercach.</div>`}
+ ],
+ rune:`Kazus Reksia: zakres przeniesienia praw czyta się <b>ściśle wg pól eksploatacji</b>. Umowa z 1977 objęła pola <b>filmowe</b>; pola <b>pozafilmowe</b> (merchandising) wróciły do spadkobierczyni.`
+},
+{
+ no:"XVI", loc:"Góra Przeznaczenia — Nowa Era", title:"Sztuczna inteligencja a prawo",
+ portrait:"tolkien_frodo.png", guide:"Frodo u kresu drogi — przed pytaniem nowej epoki",
+ xy:[92,46],
+ scene:`<p>„Dotarliśmy na próg nowej ery. Pojawiło się narzędzie potężne jak Pierścień — sztuczna inteligencja. I powraca najstarsze pytanie wyprawy: <i>kto jest twórcą?</i> Odpowiedź prawa jest jasna: <b>twórcą jest człowiek</b>."</p>`,
+ beats:[
+  {h:"AI nie może być autorem", body:`<ul>
+   <li><strong>AI nie może być autorem</strong> — twórcą wg polskiego prawa jest <strong>człowiek</strong> (osoba fizyczna).</li>
+   <li>Sam wytwór AI <strong>nie jest chroniony</strong> klasycznie — brak osobistego piętna. Granica sporna tam, gdzie istotny jest twórczy wkład człowieka kierującego narzędziem.</li>
+   <li>Za treść wygenerowaną przez AI odpowiada <strong>użytkownik</strong>.</li></ul>`},
+  {h:"Praca z AI", body:`<ul><li>Realny wkład własny; dokładne <strong>oznaczenie</strong> fragmentów z AI; we wstępie — co i jak użyto. Rozstrzygane indywidualnie.</li></ul>
+  <div class="note"><b>Łącznik:</b> wraca zasada <b>inspiracja ≠ naruszenie</b> — ale ustalenie i indywidualny charakter musi nadać człowiek.</div>`},
+  {h:"JSA — System Antyplagiatowy", body:`<p><strong>JSA</strong> (Jednolity System Antyplagiatowy) nie stwierdza plagiatu — wskazuje tylko <strong>prawdopodobieństwo</strong>; ocenia człowiek (promotor/recenzent).</p>`}
+ ],
+ rune:`<b>AI nie może być autorem</b> — twórcą jest człowiek; za treść AI odpowiada <b>użytkownik</b>. <b>JSA</b> nie stwierdza plagiatu — wskazuje prawdopodobieństwo, ocenia człowiek.`
+}
+];
+
+/* ===== RUNY PAMIĘCI (szybkie pułapki egzaminacyjne) ===== */
+const RUNES_TIPS = [
+ "Pamiętaj liczby-bliźniaki: <b>wzór użytkowy</b> i <b>znak towarowy</b> to po <b>10 lat</b> — ale znak można przedłużać w nieskończoność.",
+ "Najczęstsza pułapka: <b>berneńska</b> gwarantuje minimum <b>50 lat</b>, a polska ustawa daje <b>70</b>. Czytaj, o co pytają.",
+ "<b>Idea ≠ utwór.</b> Chroniona jest forma o indywidualnym charakterze, a nie sam pomysł czy metoda.",
+ "Internet w jednym zdaniu: <b>pobieranie TAK, udostępnianie NIE</b>. P2P = piractwo, bo udostępniasz, pobierając.",
+ "Prawa <b>osobiste</b> są bezterminowe i niezbywalne; <b>majątkowe</b> gasną po <b>70 latach</b> i można je zbyć/odziedziczyć.",
+ "Powstanie ochrony: prawo autorskie — wystarczy <b>ustalenie</b>; własność przemysłowa — trzeba <b>zgłoszenia</b> w UP.",
+ "<b>AI nie może być autorem</b> — twórcą jest człowiek. Za treść wygenerowaną przez AI odpowiada użytkownik.",
+ "Trzy plagiaty: <b>jawny</b> (kopia 1:1), <b>ukryty</b> (zmienione słowa, ten sam sens), <b>funkcjonalny</b> (tłumaczenie bez źródła)."
+];
+
+/* ===== KARTY WYROCZNI (fiszki) ===== */
+const CARDS = [
+{tag:"Czas",q:"Ile lat po śmierci twórcy gasną prawa majątkowe (PL)?",a:"70 lat — od końca roku, w którym nastąpiła śmierć twórcy."},
+{tag:"Czas",q:"Jak długo trwają autorskie prawa osobiste?",a:"Bezterminowo — czas nieograniczony, niezbywalne; trwają po śmierci twórcy."},
+{tag:"Czas",q:"Minimalny czas ochrony wg konwencji berneńskiej?",a:"Życie autora + 50 lat po jego śmierci."},
+{tag:"Czas",q:"Domyślny czas trwania licencji bez innych ustaleń?",a:"5 lat, na terytorium siedziby licencjobiorcy."},
+{tag:"Konwencje",q:"Z inspiracji którego pisarza powstała konwencja berneńska?",a:"Victora Hugo. Podpisana 9 września 1886 r."},
+{tag:"Konwencje",q:"Czego dotyczy konwencja paryska z 1883 r.?",a:"Ochrony własności przemysłowej. Powołała Międzynarodowy Związek Ochrony Własności Przemysłowej."},
+{tag:"Konwencje",q:"Gdzie ma siedzibę WIPO i z czym wiąże się TRIPS?",a:"WIPO — Genewa (agenda ONZ). TRIPS — porozumienie z 1994, załącznik do utworzenia WTO."},
+{tag:"Utwór",q:"Podaj definicję utworu (art. 1 ust. 1 PrAut).",a:"Każdy przejaw działalności twórczej o indywidualnym charakterze, ustalony w jakiejkolwiek postaci, niezależnie od wartości, przeznaczenia i sposobu wyrażenia."},
+{tag:"Utwór",q:"Jakie trzy cechy musi mieć utwór?",a:"Działalność twórcza, indywidualny charakter (osobiste piętno) i ustalenie utworu."},
+{tag:"Utwór",q:"Co to jest „ustalenie utworu”?",a:"Moment, w którym o utworze mogą dowiedzieć się osoby inne niż twórca (art. 1 ust. 3). Wtedy powstają prawa."},
+{tag:"Utwór",q:"Czy idea/pomysł jest chroniony?",a:"Nie — dopóki nie zostanie wyrażony i ustalony. Chroniona jest forma, nie pomysł."},
+{tag:"Twórca",q:"Kto może być twórcą?",a:"Każda osoba fizyczna, bez wymogów formalnych — także niewykształcona, niepełnoletnia, ubezwłasnowolniona."},
+{tag:"Twórca",q:"Na czym polega domniemanie autorstwa?",a:"Za twórcę uznaje się osobę, której nazwisko uwidoczniono na egzemplarzu lub której autorstwo podano publicznie."},
+{tag:"Twórca",q:"Czy AI może być autorem wg polskiego prawa?",a:"Nie — twórcą jest wyłącznie człowiek. Za treść AI odpowiada użytkownik."},
+{tag:"Prawa osobiste",q:"Wymień autorskie prawa osobiste.",a:"Prawo do: autorstwa, oznaczenia nazwiskiem/pseudonimem, nadzoru, decydowania o pierwszym udostępnieniu, nienaruszalności treści i formy."},
+{tag:"Prawa osobiste",q:"Kto reprezentuje prawa osobiste po śmierci twórcy (gdy nie wskazał osoby)?",a:"Małżonek, dalej: zstępni, rodzice, rodzeństwo. Gdy brak — ustala sąd."},
+{tag:"Prawa osobiste",q:"Co to jest plagiat i jakie ma rodzaje?",a:"Kradzież cudzego utworu i przedstawienie pod własnym nazwiskiem. Rodzaje: jawny, ukryty, funkcjonalny."},
+{tag:"Prawa osobiste",q:"Kara za przywłaszczenie autorstwa (art. 115)?",a:"Grzywna, ograniczenie wolności albo pozbawienie wolności do lat 3."},
+{tag:"Prawa majątkowe",q:"Wymień trzy prawa majątkowe.",a:"Prawo do wynagrodzenia, do korzystania z utworu, do rozporządzania utworem."},
+{tag:"Prawa majątkowe",q:"Jak przechodzą prawa majątkowe na inne osoby?",a:"Przez dziedziczenie, umowę oraz przejęcie utworu przez pracodawcę."},
+{tag:"Prawa majątkowe",q:"Od kiedy liczy się 70 lat przy utworze audiowizualnym?",a:"Od śmierci najpóźniej zmarłej z osób: reżysera, autora scenariusza, dialogów, kompozytora muzyki."},
+{tag:"Licencje",q:"W jakiej formie musi być licencja?",a:"Na piśmie. Ustna nie ma skutków prawnych."},
+{tag:"Licencje",q:"Czym różni się licencja wyłączna od niewyłącznej?",a:"Wyłączna — jeden podmiot ma wyłączność. Niewyłączna — twórca może udzielić jej wielu podmiotom."},
+{tag:"Internet",q:"Jaka jest zasada ściągania z internetu?",a:"Pobieranie — TAK (użytek własny). Udostępnianie — NIE."},
+{tag:"Internet",q:"Dlaczego ściąganie z P2P jest nielegalne?",a:"Bo w P2P jednocześnie pobierasz i udostępniasz — to piractwo internetowe."},
+{tag:"Przemysłowa",q:"Wynalazek — jakie prawo i na ile lat?",a:"Patent, 20 lat od zgłoszenia w Urzędzie Patentowym."},
+{tag:"Przemysłowa",q:"Wzór użytkowy — jakie prawo i na ile lat?",a:"Prawo ochronne, 10 lat. Musi mieć cechę techniczną."},
+{tag:"Przemysłowa",q:"Wzór przemysłowy — jakie prawo i na ile lat?",a:"Prawo z rejestracji, 25 lat. Nie wymaga techniczności."},
+{tag:"Przemysłowa",q:"Znak towarowy — jakie prawo i na ile lat?",a:"Prawo ochronne, 10 lat — przedłużalne. Może nim być nawet dźwięk."},
+{tag:"Przemysłowa",q:"Jak powstaje ochrona w prawie własności przemysłowej?",a:"Przez zgłoszenie w Urzędzie Patentowym (kto pierwszy zgłosi). W prawie autorskim wystarczy ustalenie."},
+{tag:"Creative Commons",q:"Jaką zasadę wyznaje Creative Commons i kto ją założył?",a:"„Pewne prawa zastrzeżone”. Założył Lawrence Lessig w 2001 r. Warunki: BY, NC, SA, ND."},
+{tag:"Polska",q:"Jak nazywa się i z którego roku jest podstawowa polska ustawa?",a:"Ustawa o prawie autorskim i prawach pokrewnych z 4 lutego 1994 r. (PrAut)."},
+{tag:"Polska",q:"Do ilu lat skrócono ochronę w PRL i kto założył ZAiKS?",a:"W PRL (1952) do 20 lat. ZAiKS założyli w 1918 Tuwim, Brzechwa i Słonimski."},
+{tag:"Organizacje",q:"Na czyje zezwolenie działają organizacje zbiorowego zarządzania?",a:"Ministra właściwego ds. kultury. Przykłady: ZAiKS, ZASP, SFP, SAFT, „Polska Książka”."}
+];
+
+/* ===== SĄD W BRAMIE (kazusy) ===== */
+const CASES = [
+{badge:"Kazus modelowy",title:"Pies Reksio — pola eksploatacji",
+scen:"L. Marszałek, autor postaci Reksia, w 1977 r. przeniósł prawa majątkowe na Studio Filmów Rysunkowych. Po jego śmierci (1991) testament wskazał wdowę. W 2017 wdowa pozwała o ustalenie praw; I instancja (2021) uznała za właściciela Studio. Sprawa trafiła do II instancji.",
+hints:["O jakie prawa toczy się spór — osobiste czy majątkowe?","Co dokładnie objęła umowa z 1977 r.?","Czym są „pola eksploatacji”?","Jak rozstrzygnąć kolizję Studio vs spadkobierczyni?"],
+ans:"<p>Spór dotyczy praw <strong>majątkowych</strong> (osobiste są niezbywalne i zostają przy twórcy). Umowa z 1977 r. przeniosła prawa związane z <strong>produkcją filmową</strong>.</p><p>Kluczowa jest koncepcja <strong>pól eksploatacji</strong>: postać żyje też poza filmem (merchandising). Tych pól umowa nie obejmowała.</p><p><strong>Wyrok II instancji (2025):</strong> wdowie przysługują prawa majątkowe na <strong>pozafilmowych polach</strong>; Studio zachowuje streaming. Wniosek: zakres przeniesienia praw czyta się ściśle — czego umowa nie wymieniła, zostaje przy twórcy/spadkobiercach.</p>"},
+{badge:"Kazus · internet",title:"Strona Pana Kowalskiego",
+scen:"Pan Kowalski używa cudzego obrazu jako tła: (A) prywatnej, niekomercyjnej strony hobbystycznej; (B) strony reklamującej usługi jego firmy malarskiej. Oceń legalność obu.",
+hints:["Które kryterium rozstrzyga?","Co to dozwolony użytek osobisty?","Co musi zrobić, by było legalnie?","Co zmienia cel komercyjny?"],
+ans:"<p>Rozstrzyga <strong>kryterium komercyjności</strong>.</p><p><strong>(A) niekomercyjna:</strong> dozwolony użytek osobisty — dopuszczalny, ale trzeba podać <strong>imię, nazwisko twórcy i źródło</strong>.</p><p><strong>(B) reklama firmy:</strong> cel <strong>komercyjny</strong> — poza dozwolonym użytkiem. Konieczna <strong>zgoda twórcy</strong>, umowa i <strong>wynagrodzenie</strong>.</p>"},
+{badge:"Kazus · ustalenie",title:"Dwaj piosenkarze w studiu",
+scen:"Dwaj piosenkarze piszą piosenkę i wykonują ją: (A) sami w pustym studiu; (B) przed rodzinami. Czy powstały prawa autorskie?",
+hints:["Co jest warunkiem powstania praw?","Na czym polega uzewnętrznienie?","Czy ktoś inny niż twórcy mógł się dowiedzieć?"],
+ans:"<p>Prawa powstają w chwili <strong>ustalenia</strong> — gdy o utworze mogą dowiedzieć się osoby <strong>inne niż twórca</strong>.</p><p><strong>(A) sami:</strong> prawa <strong>NIE</strong> powstają — brak uzewnętrznienia.</p><p><strong>(B) przy rodzinach:</strong> prawa <strong>TAK</strong> powstają — utwór został ustalony.</p><p>Analogicznie: piosenka na YouTube z 0 wyświetleń — prawa już istnieją.</p>"},
+{badge:"Kazus · AI",title:"Praca wygenerowana przez AI",
+scen:"Student oddaje pracę, której znaczną część wygenerował model AI z jego poleceń. Twierdzi, że skoro wpisywał polecenia, jest jedynym autorem i praca jest chroniona. Oceń.",
+hints:["Kto może być twórcą?","Czy wytwór AI jest utworem?","Kto odpowiada za treść AI?","Co z wkładem własnym i oznaczeniem?"],
+ans:"<p>Twórcą może być <strong>wyłącznie człowiek</strong>. Sam wytwór AI — bez osobistego piętna — <strong>nie jest chroniony</strong> klasycznie.</p><p>Za treść AI <strong>odpowiada użytkownik</strong>. Ochronę rozważa się tam, gdzie istotny jest <strong>twórczy wkład człowieka</strong> nadającego indywidualny charakter — i tu biegnie sporna granica.</p><p>Praktycznie: realny wkład własny, <strong>oznaczenie</strong> fragmentów z AI, wskazanie we wstępie. Wraca zasada: <strong>inspiracja ≠ naruszenie</strong>, ale ustalenie musi nadać człowiek.</p>"},
+{badge:"Kazus · piractwo",title:"Film z torrenta",
+scen:"Marek ściąga film przez BitTorrent, potem (a) ogląda z rodziną, (b) wrzuca plik grupie 200 znajomych. Oceń legalność obu zachowań i samego pobrania.",
+hints:["Zasada: pobieranie vs udostępnianie?","Jak działa P2P?","Gdzie kończy się użytek własny?"],
+ans:"<p><strong>Sam BitTorrent:</strong> w P2P pobierając <strong>jednocześnie udostępniasz</strong> — dlatego ściąganie z takich sieci jest <strong>nielegalne</strong> (piractwo).</p><p><strong>(a) z rodziną:</strong> mieści się w <strong>dozwolonym użytku własnym</strong>.</p><p><strong>(b) grupa 200 osób:</strong> to <strong>udostępnianie</strong> — nielegalne; granica użytku przekroczona.</p>"},
+{badge:"Kazus · plagiat",title:"Przerobiony akapit",
+scen:"Studentka przepisuje akapit z książki, zmienia szyk i kilka słów (ten sam sens) i wstawia do pracy bez przypisu i cudzysłowu. Zakwalifikuj i podaj konsekwencje.",
+hints:["Cytat czy plagiat?","Jaki rodzaj plagiatu?","Sankcje cywilne i karne?"],
+ans:"<p>To <strong>plagiat ukryty</strong> — zmiana słów przy zachowaniu sensu, bez cytowania. Gdyby zacytowała i podała autora oraz źródło, byłby to legalny <strong>cytat</strong>.</p><p><strong>Karnie:</strong> art. 115 — grzywna, ograniczenie albo pozbawienie wolności <strong>do lat 3</strong>.</p><p><strong>Cywilnie:</strong> zaniechanie, usunięcie skutków, przeprosiny, zadośćuczynienie; w warunkach akademickich — odpowiedzialność dyscyplinarna; JSA wskaże prawdopodobieństwo, ocenia człowiek.</p>"}
+];
+
+/* ===== LEKSYKON ===== */
+const GLOSSARY = [
+{t:"Utwór (art. 1 PrAut)",d:"Każdy przejaw działalności twórczej o indywidualnym charakterze, ustalony w jakiejkolwiek postaci. Wymaga wkładu intelektualnego człowieka i osobistego piętna."},
+{t:"Ustalenie",d:"Uzewnętrznienie utworu tak, by mogły dowiedzieć się o nim osoby inne niż twórca. Z tą chwilą powstają prawa autorskie."},
+{t:"Twórca",d:"Każda osoba fizyczna, która stworzyła utwór — bez wymogów formalnych, wieku czy wykształcenia. AI twórcą być nie może."},
+{t:"Autorskie prawa osobiste",d:"Chronią więź twórcy z utworem (autorstwo, nazwisko, nadzór, pierwsze udostępnienie, nienaruszalność). Bezterminowe i niezbywalne."},
+{t:"Autorskie prawa majątkowe",d:"Prawa ekonomiczne: wynagrodzenie, korzystanie, rozporządzanie. Zbywalne i dziedziczne; gasną po 70 latach od końca roku śmierci twórcy."},
+{t:"Pola eksploatacji",d:"Wyodrębnione sposoby korzystania z utworu (np. film, druk, merchandising). Umowa przenosi prawa tylko na wymienione pola — resztę czyta się ściśle."},
+{t:"Plagiat",d:"Kradzież cudzego utworu i przedstawienie pod własnym nazwiskiem. Rodzaje: jawny, ukryty, funkcjonalny."},
+{t:"Cytat",d:"Dosłowne przytoczenie cudzego utworu. Legalny, gdy utwór jest rozpowszechniony, podano autora i źródło, a cytat służy celowi (analiza, polemika)."},
+{t:"Dozwolony użytek osobisty",d:"Korzystanie z rozpowszechnionego utworu bez zgody twórcy i nieodpłatnie — w celu prywatnym, niekomercyjnym. Decyduje kryterium komercyjności."},
+{t:"Licencja",d:"Umowa o korzystanie z utworu. Musi być na piśmie. Wyłączna lub niewyłączna; domyślnie 5 lat na terytorium siedziby licencjobiorcy."},
+{t:"Konwencja berneńska (1886)",d:"Międzynarodowa umowa o prawach autorskich (inspiracja Victora Hugo). Minimum: życie autora + 50 lat. Ochrona automatyczna, bez zgłoszenia."},
+{t:"Konwencja paryska (1883)",d:"Międzynarodowa umowa o ochronie własności przemysłowej. Powołała pierwszy międzynarodowy związek ochrony."},
+{t:"WIPO / TRIPS",d:"WIPO — Światowa Organizacja Własności Intelektualnej (Genewa, agenda ONZ). TRIPS — porozumienie z 1994 r. przy utworzeniu WTO."},
+{t:"Creative Commons",d:"Non-profit (Lawrence Lessig, 2001). Zasada „pewne prawa zastrzeżone”. Warunki: BY, NC, SA, ND."},
+{t:"Własność przemysłowa",d:"Katalog zamknięty (wynalazki, wzory, znaki). Ochrona przez zgłoszenie w Urzędzie Patentowym (kto pierwszy zgłosi)."},
+{t:"Patent",d:"Prawo na wynalazek — rozwiązanie techniczne, nowe, o poziomie wynalazczym. Ochrona 20 lat od zgłoszenia. Zbywalny i dziedziczny."},
+{t:"Wzór użytkowy / przemysłowy",d:"Użytkowy — techniczne rozwiązanie kształtu (prawo ochronne, 10 lat). Przemysłowy — postać wytworu o indywidualnym charakterze, bez techniczności (prawo z rejestracji, 25 lat)."},
+{t:"Znak towarowy",d:"Oznaczenie odróżniające towary (wyraz, rysunek, kolor, dźwięk). Prawo ochronne 10 lat, przedłużalne w nieskończoność."},
+{t:"Organizacja zbiorowego zarządzania",d:"Np. ZAiKS. Zarządza prawami twórcy po podpisaniu umowy (art. 21); działa na zezwolenie ministra kultury. Spory: Komisja Prawa Autorskiego."},
+{t:"JSA",d:"Jednolity System Antyplagiatowy. Nie stwierdza plagiatu — wskazuje prawdopodobieństwo; ocenia człowiek (promotor/recenzent)."}
+];
+
+/* ===== PRÓBA OGNIA (quiz) ===== */
+const QUIZ = [
+{q:"Po ilu latach gasną autorskie prawa majątkowe w Polsce?",o:["50 lat","70 lat od końca roku śmierci twórcy","20 lat","Nigdy — są wieczne"],c:1,e:"70 lat, liczone od końca roku, w którym zmarł twórca. Berneńska daje minimum 50 — to częsta pułapka."},
+{q:"Które trzy cechy musi mieć utwór?",o:["Wartość, cena i rejestracja","Działalność twórcza, indywidualny charakter, ustalenie","Nowość, poziom wynalazczy, zgłoszenie","Forma pisemna, podpis, data"],c:1,e:"Art. 1 PrAut: działalność twórcza + indywidualny charakter (osobiste piętno) + ustalenie."},
+{q:"Czy sama idea/pomysł jest chroniona prawem autorskim?",o:["Tak, zawsze","Nie — chroniona jest forma, nie pomysł","Tylko po zgłoszeniu w UP","Tylko jeśli jest komercyjna"],c:1,e:"Idea ≠ utwór. Chroniona jest forma o indywidualnym charakterze, nie sam pomysł czy metoda."},
+{q:"Jaka jest zasada korzystania z internetu?",o:["Pobieranie NIE, udostępnianie TAK","Wszystko legalne","Pobieranie TAK, udostępnianie NIE","Wszystko nielegalne"],c:2,e:"Pobieranie na użytek własny — legalne; udostępnianie — nie. Dlatego P2P (pobierasz i udostępniasz naraz) to piractwo."},
+{q:"Autorskie prawa osobiste są:",o:["Zbywalne i czasowe (70 lat)","Bezterminowe i niezbywalne","Ważne tylko za życia twórcy","Dziedziczne jak majątkowe"],c:1,e:"Chronią więź twórcy z utworem — trwają bezterminowo i nie można ich zbyć."},
+{q:"W jakiej formie musi być zawarta licencja?",o:["Ustnej wystarczy","Na piśmie","W formie aktu notarialnego","Dowolnej, także e-mailem bez podpisu"],c:1,e:"Licencja musi być na piśmie — umowa ustna nie wywołuje skutków prawnych."},
+{q:"Konwencja berneńska (1886) dotyczy:",o:["Własności przemysłowej","Praw autorskich","Znaków towarowych","Patentów"],c:1,e:"Berneńska = prawa autorskie (inspiracja Victora Hugo). Paryska (1883) = własność przemysłowa."},
+{q:"Ile lat trwa ochrona patentu na wynalazek?",o:["10 lat","20 lat","25 lat","70 lat"],c:1,e:"Patent — 20 lat od zgłoszenia. Wzór użytkowy 10, wzór przemysłowy 25, znak towarowy 10 (przedłużalny)."},
+{q:"Czy AI może być autorem utworu wg polskiego prawa?",o:["Tak","Nie — twórcą jest człowiek","Tak, jeśli zgłoszone w UP","Tylko współautorem"],c:1,e:"Twórcą jest wyłącznie człowiek (osoba fizyczna). Za treść AI odpowiada użytkownik."},
+{q:"Jak powstaje ochrona w prawie własności przemysłowej?",o:["Przez ustalenie utworu","Automatycznie","Przez zgłoszenie w Urzędzie Patentowym","Przez publikację"],c:2,e:"W własności przemysłowej liczy się zgłoszenie (kto pierwszy). W prawie autorskim wystarczy ustalenie."},
+{q:"Co rozstrzyga o legalności użycia cudzego obrazu na stronie WWW?",o:["Liczba odwiedzin","Kryterium komercyjności","Rozdzielczość obrazu","Kraj serwera"],c:1,e:"Cel niekomercyjny (z podaniem autora i źródła) bywa dozwolony; komercyjny zawsze wymaga zgody i wynagrodzenia."},
+{q:"Zmiana kilku słów cudzego tekstu przy zachowaniu sensu, bez cytowania, to:",o:["Legalny cytat","Plagiat ukryty","Inspiracja","Dozwolony użytek"],c:1,e:"To plagiat ukryty. Cytat byłby legalny dopiero z podaniem autora, źródła i celu."},
+{q:"Zasadę „pewne prawa zastrzeżone” wprowadza:",o:["WIPO","Creative Commons","ZAiKS","Urząd Patentowy"],c:1,e:"Creative Commons (Lawrence Lessig, 2001), warunki BY, NC, SA, ND."},
+{q:"Podstawowa polska ustawa o prawie autorskim pochodzi z roku:",o:["1926","1952","1994","2000"],c:2,e:"Ustawa o prawie autorskim i prawach pokrewnych z 4 lutego 1994 r. (PrAut). 1926 — pierwsza polska; 2000 — Prawo własności przemysłowej."},
+{q:"W kazusie Reksia o przynależności praw zadecydowały:",o:["Prawa osobiste","Pola eksploatacji","Data śmierci twórcy","Rejestracja znaku"],c:1,e:"Umowa z 1977 objęła pola filmowe; pola pozafilmowe (merchandising) wróciły do spadkobierczyni. Zakres czyta się ściśle."}
+];
+</script>
+<script>
+/* ===================================================================
+   LOGIKA APLIKACJI
+   =================================================================== */
+const SIGIL=`<svg class="sigil" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="50" cy="50" r="46" stroke-width="2.5" opacity=".55"/><circle cx="50" cy="50" r="36" stroke-width="1" opacity=".3"/></g><g stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".5"><line x1="50" y1="3" x2="50" y2="12"/><line x1="50" y1="88" x2="50" y2="97"/><line x1="3" y1="50" x2="12" y2="50"/><line x1="88" y1="50" x2="97" y2="50"/></g><text x="50" y="68" text-anchor="middle" font-family="Cinzel, serif" font-weight="700" font-size="48" fill="currentColor">ᚱ</text></svg>`;
+
+let visited = {};
+let review = {};
+let lastCompleted = null;
+try{ const s=localStorage.getItem('kronika_visited'); if(s) visited=JSON.parse(s); }catch(e){}
+try{ const r=localStorage.getItem('kronika_review'); if(r) review=JSON.parse(r); }catch(e){}
+let currentIdx = 0;
+let soundOn = false;
+
+function saveVisited(){ try{ localStorage.setItem('kronika_visited',JSON.stringify(visited)); }catch(e){} }
+function saveReview(){ try{ localStorage.setItem('kronika_review',JSON.stringify(review)); }catch(e){} }
+function maxReached(){ let m=-1; STATIONS.forEach((s,i)=>{ if(visited[s.no]) m=i; }); return m; }
+function firstUnvisited(){ for(let i=0;i<STATIONS.length;i++){ if(!visited[STATIONS[i].no]) return i; } return STATIONS.length-1; }
+function visitedCount(){ return STATIONS.filter(s=>visited[s.no]).length; }
+
+/* ---------- screens ---------- */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
+}
+function startJourney(){
+  document.getElementById('topbar').style.display='flex';
+  document.getElementById('dock').style.display='flex';
+  buildMap(); updateProgress(); showMap();
+  if(!soundOn) toggleSound();
+}
+function showMap(){ SceneFX.stop(); show('map-screen'); }
+
+/* ---------- progress ---------- */
+function updateProgress(){
+  const n=visitedCount();
+  document.getElementById('prog-txt').textContent=n+' / '+STATIONS.length;
+  document.getElementById('prog-bar').style.width=(n/STATIONS.length*100)+'%';
+}
+
+/* ---------- MAP ---------- */
+function buildMap(){
+  const nodes=document.getElementById('nodes');
+  const routes=document.getElementById('routes');
+  nodes.innerHTML='';
+  const reached=maxReached();
+  const cur=firstUnvisited();
+  // szlak planowany (blady) + szlak rysowany tuszem (do osiągniętego punktu)
+  const plan=STATIONS.map(s=>s.xy[0]+','+s.xy[1]).join(' ');
+  const inkPts=STATIONS.slice(0,Math.max(reached,0)+1).map(s=>s.xy[0]+','+s.xy[1]).join(' ');
+  routes.innerHTML='<polyline class="plan" points="'+plan+'" fill="none" stroke="rgba(120,82,28,.5)" stroke-width="0.45" stroke-dasharray="1.2 1.1" stroke-linecap="round"/>'+
+    (reached>=0?'<polyline class="ink" points="'+inkPts+'" fill="none" stroke="#7a1d14" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>':'');
+  STATIONS.forEach((s,i)=>{
+    const isDone=!!visited[s.no];
+    const d=document.createElement('div');
+    d.className='node'+(isDone?' done':'')+(i===cur&&!isDone?' current':'')+(review[s.no]?' review':'')+(s.no===lastCompleted?' stamp':'');
+    d.style.left=s.xy[0]+'%'; d.style.top=s.xy[1]+'%';
+    d.innerHTML='<div class="dot">'+(isDone?'✦':s.no)+'</div>'+(review[s.no]?'<span class="badge-r">↻</span>':'')+'<div class="lbl">'+s.no+'. '+s.title+'</div>';
+    d.onclick=()=>openChapter(i);
+    nodes.appendChild(d);
+    if(!isDone){ const f=document.createElement('div'); f.className='fog'; f.style.left=s.xy[0]+'%'; f.style.top=s.xy[1]+'%'; nodes.appendChild(f); }
+  });
+  // znacznik wędrowca — przy ostatniej zdobytej krainie (lub na starcie)
+  const wIdx = allDone()? STATIONS.length-1 : (reached>=0? reached : 0);
+  const w=document.createElement('div'); w.className='wanderer';
+  w.style.left=STATIONS[wIdx].xy[0]+'%'; w.style.top=STATIONS[wIdx].xy[1]+'%';
+  w.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 9 8l-5 .5 3.7 3.3L6.5 17 12 14l5.5 3-1.2-5.2L20 8.5 15 8z"/></svg>';
+  nodes.appendChild(w);
+  // animacja rysowania tuszem
+  const ink=routes.querySelector('.ink');
+  if(ink){ try{ const L=ink.getTotalLength(); ink.style.strokeDasharray=L; ink.style.strokeDashoffset=L; requestAnimationFrame(()=>requestAnimationFrame(()=>{ ink.style.strokeDashoffset=0; })); }catch(e){} }
+  if(lastCompleted){ const ln=lastCompleted; setTimeout(()=>{ lastCompleted=null; },700); }
+}
+function allDone(){ return STATIONS.every(s=>visited[s.no]); }
+
+/* ---------- THEMES (tematyczne tło + akcent koloru per rozdział) ---------- */
+const THEMES={
+ 'I':{fx:'dust',hex:'#b9893b'},   'II':{fx:'dust',hex:'#a9763a'},
+ 'III':{fx:'runes',hex:'#7fb6cf'},'IV':{fx:'dust',hex:'#b06a2e'},
+ 'V':{fx:'ember',hex:'#d98f2e'},  'VI':{fx:'leaves',hex:'#5c8a52'},
+ 'VII':{fx:'runes',hex:'#ecc06a'},'VIII':{fx:'ember',hex:'#e0742d'},
+ 'IX':{fx:'dust',hex:'#b9893b'},  'X':{fx:'leaves',hex:'#6fa05a'},
+ 'XI':{fx:'orbs',hex:'#6f9bd6'},  'XII':{fx:'mist',hex:'#9a8f6a'},
+ 'XIII':{fx:'leaves',hex:'#c7a85a'},'XIV':{fx:'mist',hex:'#b07a3a'},
+ 'XV':{fx:'dust',hex:'#b9893b'},  'XVI':{fx:'ember',hex:'#e0742d'}
+};
+
+/* ---------- CHAPTER ---------- */
+function openChapter(i){
+  currentIdx=i;
+  const s=STATIONS[i];
+  const th=THEMES[s.no]||{fx:'dust',hex:'#b9893b'};
+  document.getElementById('ch-actno').textContent='AKT '+s.no;
+  const fresh=!visited[s.no];
+  let beats=s.beats.map((b,bi)=>`<div class="beat" data-bi="${bi}"><h4>${b.h}</h4>${b.body}</div>`)
+    .join('<div class="flourish" aria-hidden="true"><span></span>❦<span></span></div>');
+  const html=`
+    <span class="orn tl">&#10087;</span><span class="orn tr">&#10087;</span>
+    <span class="orn bl">&#10087;</span><span class="orn br">&#10087;</span>
+    <div class="ch-hero">
+      <img class="ch-portrait" src="${s.portrait}" alt="">
+      <div class="meta">
+        <div class="ch-loc">${s.loc}</div>
+        <div class="ch-title">${s.title}</div>
+        <div class="ch-guide">${s.guide}</div>
+      </div>
+      <div class="margin-doodle" aria-hidden="true">${doodleFor(th.fx)}</div>
+    </div>
+    <div class="scene">${s.scene}</div>
+    ${beats}
+    <div class="rune-box${fresh?' fresh':''}">
+      <span class="sigil-wrap">${SIGIL}</span>
+      <div class="rt">
+        <div class="k">Runa pamięci — to zostaje na egzamin</div>
+        <div class="v">${s.rune}</div>
+        <div class="rune-actions">
+          <button class="ra" onclick="markKnown('${s.no}',this)">✓ Umiem</button>
+          <button class="ra rev${review[s.no]?' on':''}" onclick="markReview('${s.no}',this)">↻ Do powtórki</button>
+        </div>
+      </div>
+    </div>
+    <div class="ch-nav">
+      <button class="nav-back" onclick="showMap()">‹ Mapa wyprawy</button>
+      <button class="nav-next" onclick="nextChapter()">${i<STATIONS.length-1?'Następna stacja ›':'Zakończ wyprawę ✦'}</button>
+    </div>`;
+  const page=document.getElementById('ch-page');
+  page.innerHTML=html;
+  // mini-interakcje
+  attachLawReveals(page);
+  decorateTokens(page);
+  show('chapter-screen');
+  setupBeatReveal();
+  SceneFX.start(th.fx, th.hex);
+  SFX.page();
+  // mark visited (collect rune)
+  if(!visited[s.no]){
+    visited[s.no]=true; lastCompleted=s.no; saveVisited(); updateProgress();
+    setTimeout(()=>{ showToast(); SFX.seal(); },700);
+  }
+}
+
+/* szkic marginalny w klimacie motywu rozdziału (ink line-art) */
+function doodleFor(fx){
+  const o='<svg viewBox="0 0 48 60" aria-hidden="true">';
+  if(fx==='ember') return o+'<path d="M24 6c3 9-6 12-6 21a6 6 0 0 0 12 0c5 4 8 9 8 16a14 14 0 0 1-28 0c0-12 11-18 14-37z"/></svg>';
+  if(fx==='leaves') return o+'<path d="M24 4C10 14 8 38 24 56 40 38 38 14 24 4zM24 10v44"/><path d="M24 22l-9-6M24 34l9-7M24 44l-8-6"/></svg>';
+  if(fx==='runes') return o+'<circle cx="24" cy="28" r="18"/><path d="M18 18v24M30 18v24M18 22l12 8M18 34l12-8"/></svg>';
+  if(fx==='mist') return o+'<path d="M4 44 18 20l9 13 6-9 11 20z"/><path d="M2 52h44"/><path d="M8 30a5 5 0 0 1 10 0M28 24a5 5 0 0 1 10 0"/></svg>';
+  if(fx==='orbs') return o+'<path d="M4 30c8-12 32-12 40 0-8 12-32 12-40 0z"/><circle cx="24" cy="30" r="7"/><circle cx="24" cy="30" r="2.5"/></svg>';
+  return o+'<path d="M40 8C26 14 14 30 10 48l-4 6 8-2c16-6 28-20 30-36zM16 44c4-2 8-6 10-10"/></svg>';
+}
+function markKnown(no,btn){
+  delete review[no]; saveReview(); SFX.quill();
+  const wrap=btn&&btn.closest('.rune-actions'); if(wrap){ wrap.querySelectorAll('.ra').forEach(b=>b.classList.remove('on')); btn.classList.add('done'); btn.textContent='✓ Zapamiętane'; const r=wrap.querySelector('.rev'); if(r){r.classList.remove('on');} }
+}
+function markReview(no,btn){
+  if(review[no]){ delete review[no]; btn&&btn.classList.remove('on'); }
+  else { review[no]=true; btn&&btn.classList.add('on'); }
+  saveReview(); SFX.page();
+  const k=btn&&btn.closest('.rune-actions').querySelector('.ra:not(.rev)'); if(k){k.classList.remove('done'); k.textContent='✓ Umiem';}
+}
+
+/* law — schowane pod „dotknij, by odsłonić” */
+function attachLawReveals(root){
+  root.querySelectorAll('.law').forEach(el=>{
+    const c=document.createElement('div'); c.className='law-content'; c.innerHTML=el.innerHTML;
+    el.innerHTML=''; el.appendChild(c);
+    el.addEventListener('click',()=>{ el.classList.toggle('open'); if(el.classList.contains('open')) SFX.quill(); });
+  });
+}
+/* liczby → tokeny, art. → odnośniki prawne */
+function decorateTokens(root){
+  const re=/(art\.\s?\d+[a-z]?(?:\s?ust\.\s?\d+)?)|(\b(?:14|17|18|19|20)\d{2}\b)|(\b\d{1,3}\s?lat(?:a)?\b)|(\blat\s\d\b)/gi;
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
+  const nodes=[]; let nd;
+  while(nd=walker.nextNode()){
+    if(nd.nodeValue.trim() && !(nd.parentElement&&nd.parentElement.closest('.numtok,.lawref,.rune-box'))) nodes.push(nd);
+  }
+  nodes.forEach(node=>{
+    const txt=node.nodeValue; re.lastIndex=0; if(!re.test(txt)) return; re.lastIndex=0;
+    const frag=document.createDocumentFragment(); let last=0,m;
+    while(m=re.exec(txt)){
+      if(m.index>last) frag.appendChild(document.createTextNode(txt.slice(last,m.index)));
+      const span=document.createElement('span');
+      span.className=m[1]?'lawref':'numtok'; span.textContent=m[0];
+      frag.appendChild(span); last=re.lastIndex;
+    }
+    if(last<txt.length) frag.appendChild(document.createTextNode(txt.slice(last)));
+    node.parentNode.replaceChild(frag,node);
+  });
+}
+function nextChapter(){
+  if(currentIdx<STATIONS.length-1){ openChapter(currentIdx+1); }
+  else { buildMap(); finishJourney(); }
+}
+function setupBeatReveal(){
+  const beats=document.querySelectorAll('.beat');
+  if(!('IntersectionObserver' in window)){ beats.forEach(b=>b.classList.add('in')); return; }
+  const io=new IntersectionObserver((ents)=>{
+    ents.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.15});
+  beats.forEach(b=>io.observe(b));
+}
+function showToast(){
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+function finishJourney(){
+  openModal('quiz');
+}
+
+/* ---------- SOUND ---------- */
+function toggleSound(){
+  const a=document.getElementById('bgm'), b=document.getElementById('sound-btn');
+  soundOn=!soundOn;
+  if(soundOn){ SFX.resume(); a.volume=0.4; a.play().catch(()=>{}); b.classList.add('on'); b.textContent='♪ Dźwięk wł.'; }
+  else{ a.pause(); b.classList.remove('on'); b.textContent='♪ Dźwięk wył.'; }
+}
+
+/* ---------- DUST CANVAS ---------- */
+(function(){
+  const c=document.getElementById('dust'),x=c.getContext('2d');
+  let w,h,parts;
+  function rs(){ w=c.width=innerWidth; h=c.height=innerHeight;
+    parts=Array.from({length:Math.min(70,Math.floor(w/22))},()=>({
+      x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.8+.4,
+      vx:(Math.random()-.5)*.25,vy:-(Math.random()*.35+.08),
+      a:Math.random()*.5+.2,hue:Math.random()<.3?'236,192,106':'224,160,90'}));
+  }
+  rs(); addEventListener('resize',rs);
+  (function loop(){
+    x.clearRect(0,0,w,h);
+    parts.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.y<-5){p.y=h+5;p.x=Math.random()*w;}
+      if(p.x<-5)p.x=w+5; if(p.x>w+5)p.x=-5;
+      x.beginPath(); x.arc(p.x,p.y,p.r,0,7);
+      x.fillStyle='rgba('+p.hue+','+p.a+')';
+      x.shadowBlur=6; x.shadowColor='rgba('+p.hue+',.6)'; x.fill();
+    });
+    x.shadowBlur=0;
+    requestAnimationFrame(loop);
+  })();
+})();
+
+/* ===================================================================
+   MODALE
+   =================================================================== */
+function openModal(kind){
+  const body=document.getElementById('modal-body');
+  if(kind==='flash') body.innerHTML=renderFlash();
+  else if(kind==='cases') body.innerHTML=renderCases();
+  else if(kind==='runes') body.innerHTML=renderRunes();
+  else if(kind==='gloss') body.innerHTML=renderGloss();
+  else if(kind==='exam') body.innerHTML=renderExam();
+  else if(kind==='quiz') body.innerHTML=renderQuizIntro();
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('sheet-inner').scrollTop=0;
+}
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id==='modal') closeModal(); });
+
+/* ----- FLASHCARDS ----- */
+let fcFilter='Wszystkie', fcIdx=0, fcList=[];
+function flashCats(){ return ['Wszystkie',...Array.from(new Set(CARDS.map(c=>c.tag)))]; }
+function renderFlash(){
+  fcFilter='Wszystkie'; fcIdx=0; refreshFcList();
+  const cats=flashCats().map(c=>`<button class="${c===fcFilter?'on':''}" onclick="setFcFilter('${c}')">${c}</button>`).join('');
+  return `<h2>Karty Wyroczni</h2><div class="sub">Kliknij kartę, by ją odwrócić • ${CARDS.length} kart</div>
+    <div class="fcat" id="fcat">${cats}</div>
+    <div class="flashwrap">
+      <div class="flashcard" id="flashcard" onclick="this.classList.toggle('flip');SFX.flip()"><div class="fc-inner" id="fc-inner"></div></div>
+      <div class="flashnav">
+        <button onclick="fcStep(-1)">‹ Poprzednia</button>
+        <span class="count" id="fc-count"></span>
+        <button onclick="fcStep(1)">Następna ›</button>
+      </div>
+    </div>`;
+}
+function refreshFcList(){ fcList = fcFilter==='Wszystkie'?CARDS.slice():CARDS.filter(c=>c.tag===fcFilter); paintFc(); }
+function setFcFilter(c){ fcFilter=c; fcIdx=0; document.querySelectorAll('#fcat button').forEach(b=>b.classList.toggle('on',b.textContent===c)); refreshFcList(); }
+function paintFc(){
+  const card=fcList[fcIdx]; if(!card) return;
+  document.getElementById('flashcard').classList.remove('flip');
+  document.getElementById('fc-inner').innerHTML=
+    `<div class="fc-face"><div class="fc-tag">${card.tag}</div><div class="fc-q">${card.q}</div><div class="fc-hint">kliknij, by odsłonić odpowiedź</div></div>
+     <div class="fc-face fc-back"><div class="fc-a">${card.a}</div></div>`;
+  document.getElementById('fc-count').textContent=(fcIdx+1)+' / '+fcList.length;
+}
+function fcStep(d){ fcIdx=(fcIdx+d+fcList.length)%fcList.length; paintFc(); }
+
+/* ----- CASES ----- */
+function renderCases(){
+  const pick=CASES.map((c,i)=>`<button onclick="openCase(${i})"><span class="cb">${c.badge}</span>${c.title}</button>`).join('');
+  return `<h2>Sąd w Bramie</h2><div class="sub">Przeczytaj sprawę, przemyśl, potem odsłoń wyrok</div>
+    <div class="case-pick">${pick}</div><div class="case-body" id="case-body"></div>`;
+}
+function openCase(i){
+  const c=CASES[i];
+  document.getElementById('case-body').innerHTML=
+    `<div class="badge">${c.badge}</div><h3>${c.title}</h3>
+     <div class="case-scen">${c.scen}</div>
+     <details class="case-hints" open><summary>Wskazówki do rozważenia</summary><ul>${c.hints.map(h=>`<li>${h}</li>`).join('')}</ul></details>
+     <button class="reveal-btn" onclick="document.getElementById('verdict-${i}').classList.add('show');this.style.display='none'">⚖️ Odsłoń wyrok</button>
+     <div class="case-verdict" id="verdict-${i}">${c.ans}</div>`;
+  document.getElementById('case-body').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* ----- RUNES ----- */
+function renderRunes(){
+  const items=RUNES_TIPS.map(t=>`<div class="runeitem"><span class="sigil-wrap">${SIGIL}</span><div class="t">${t}</div></div>`).join('');
+  return `<h2>Runy Pamięci</h2><div class="sub">Osiem pułapek, które najczęściej zastawia egzaminator</div><div class="runelist">${items}</div>`;
+}
+
+/* ----- PRZED EGZAMINEM (tryb nauki) ----- */
+function renderExam(){
+  const total=STATIONS.length, done=visitedCount();
+  const rev=STATIONS.filter(s=>review[s.no]);
+  const known=STATIONS.filter(s=>visited[s.no]&&!review[s.no]);
+  const unseen=STATIONS.filter(s=>!visited[s.no]);
+  const sec=(title,arr,cls)=> arr.length? `<div class="exam-sec"><h3 class="${cls}">${title} <span>(${arr.length})</span></h3>`+arr.map(examItem).join('')+`</div>`:'';
+  return `<h2>Przed egzaminem</h2>
+    <div class="sub">Zdobyto ${done} z ${total} run • do powtórki: ${rev.length}</div>
+    <div class="exam-actions">
+      <button class="quiz-start-btn" ${rev.length?'':'disabled style="opacity:.5;cursor:default"'} onclick="${rev.length?'startReview()':''}">↻ Powtórz słabe (${rev.length})</button>
+      <button class="quiz-start-btn alt" onclick="openModal('quiz')">Próba Ognia</button>
+    </div>
+    ${sec('Do powtórki',rev,'er')}
+    ${sec('Opanowane',known,'ek')}
+    ${sec('Jeszcze we mgle',unseen,'eu')}`;
+}
+function examItem(s){
+  return `<div class="exam-item">
+    <span class="ei-no">${s.no}</span>
+    <div class="ei-body"><b>${s.title}</b><div class="ei-rune">${visited[s.no]?s.rune:'<i>Krainę spowija mgła — wejdź, by odsłonić runę.</i>'}</div></div>
+    <button class="ei-go" onclick="examGo('${s.no}')">${visited[s.no]?'Powtórz':'Odkryj'}</button>
+  </div>`;
+}
+function examGo(no){ closeModal(); const i=STATIONS.findIndex(s=>s.no===no); if(i>=0) openChapter(i); }
+function startReview(){
+  const rev=STATIONS.filter(s=>review[s.no]);
+  if(!rev.length) return;
+  fcList=rev.map(s=>({tag:'Akt '+s.no+' · do powtórki',q:s.title,a:s.rune})); fcIdx=0;
+  document.getElementById('modal-body').innerHTML=
+    `<h2>Powtórka słabych run</h2><div class="sub">${rev.length} do powtórki — kliknij kartę, by odsłonić runę</div>
+     <div class="flashwrap">
+       <div class="flashcard" id="flashcard" onclick="this.classList.toggle('flip');SFX.flip()"><div class="fc-inner" id="fc-inner"></div></div>
+       <div class="flashnav"><button onclick="fcStep(-1)">‹ Poprzednia</button><span class="count" id="fc-count"></span><button onclick="fcStep(1)">Następna ›</button></div>
+     </div>
+     <div style="text-align:center;margin-top:18px"><button class="quiz-retry alt2" onclick="openModal('exam')">‹ Wróć do listy</button></div>`;
+  paintFc();
+}
+
+/* ----- GLOSSARY ----- */
+function renderGloss(){
+  return `<h2>Leksykon Śródziemia</h2><div class="sub">${GLOSSARY.length} pojęć — przeszukaj lub przewiń</div>
+    <input class="gloss-search" id="gloss-search" placeholder="Szukaj pojęcia…" oninput="filterGloss(this.value)">
+    <div class="gloss-list" id="gloss-list">${glossItems(GLOSSARY)}</div>`;
+}
+function glossItems(arr){ return arr.map(g=>`<div class="gloss-item"><div class="term">${g.t}</div><div class="def">${g.d}</div></div>`).join('')||'<div class="sub">Brak wyników.</div>'; }
+function filterGloss(q){
+  q=q.toLowerCase().trim();
+  const f=GLOSSARY.filter(g=>g.t.toLowerCase().includes(q)||g.d.toLowerCase().includes(q));
+  document.getElementById('gloss-list').innerHTML=glossItems(f);
+}
+
+/* ----- QUIZ ----- */
+let qOrder=[], qPos=0, qScore=0;
+function renderQuizIntro(){
+  return `<div class="quiz-intro"><h2>Próba Ognia</h2>
+    <div class="sub">${QUIZ.length} pytań losowo. Sprawdź, czy wyprawa zostawiła ślad w pamięci.</div>
+    <button class="quiz-start-btn" onclick="startQuiz()">Rozpocznij próbę 🔥</button></div>`;
+}
+function startQuiz(){
+  qOrder=QUIZ.map((_,i)=>i).sort(()=>Math.random()-.5);
+  qPos=0; qScore=0; paintQuiz();
+}
+function paintQuiz(){
+  const body=document.getElementById('modal-body');
+  if(qPos>=qOrder.length){ paintQuizResult(); return; }
+  const q=QUIZ[qOrder[qPos]];
+  const opts=q.o.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz(${i})">${o}</button>`).join('');
+  body.innerHTML=`<h2 style="font-size:22px">Próba Ognia</h2>
+    <div class="quiz-prog">Pytanie ${qPos+1} z ${qOrder.length} • Punkty: ${qScore}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts" id="quiz-opts">${opts}</div>
+    <div class="quiz-expl" id="quiz-expl"></div>
+    <button class="quiz-next" id="quiz-next" onclick="qPos++;paintQuiz()">Dalej ›</button>`;
+}
+function answerQuiz(i){
+  const q=QUIZ[qOrder[qPos]];
+  const btns=document.querySelectorAll('#quiz-opts .quiz-opt');
+  btns.forEach((b,bi)=>{ b.onclick=null; b.classList.add('dim');
+    if(bi===q.c) b.classList.add('correct');
+    if(bi===i&&i!==q.c) b.classList.add('wrong');
+  });
+  if(i===q.c) qScore++;
+  const ex=document.getElementById('quiz-expl'); ex.innerHTML=(i===q.c?'<b>Zgadza się!</b> ':'<b>Niezupełnie.</b> ')+q.e; ex.classList.add('show');
+  document.getElementById('quiz-next').classList.add('show');
+  document.querySelector('.quiz-prog').textContent=`Pytanie ${qPos+1} z ${qOrder.length} • Punkty: ${qScore}`;
+}
+function paintQuizResult(){
+  const pct=Math.round(qScore/qOrder.length*100);
+  let v;
+  if(pct>=90) v="Mistrz Pióra! Egzamin nie ma z tobą szans.";
+  else if(pct>=70) v="Dzielny wędrowiec — jeszcze kilka run i komplet.";
+  else if(pct>=50) v="Droga zaczęta. Wróć na mapę i powtórz słabsze stacje.";
+  else v="Mordor jeszcze daleko. Przejdź wyprawę raz jeszcze — warto.";
+  document.getElementById('modal-body').innerHTML=`<div class="quiz-result">
+    <h2>Wynik Próby</h2>
+    <div class="score">${qScore}/${qOrder.length}</div>
+    <div class="verdict">${v}</div>
+    <button class="quiz-retry" onclick="startQuiz()">Spróbuj ponownie</button>
+    <button class="quiz-retry" style="background:rgba(58,36,16,.2);color:#3a2510" onclick="closeModal();showMap()">Wróć na mapę</button>
+  </div>`;
+}
+
+/* ===================================================================
+   SceneFX — tematyczne tło per rozdział
+   typy: dust · ember · leaves · runes · orbs · mist
+   =================================================================== */
+const SceneFX=(function(){
+  let cv,ctx,W,H,parts=[],type='dust',rgb='185,137,59',raf=null,running=false;
+  const GLYPHS=['ᚱ','ᚦ','ᛗ','ᛟ','ᛜ','ᛉ','ᚷ','ᚹ','ᛞ','ᛒ'];
+  function hex2rgb(h){h=h.replace('#','');return parseInt(h.slice(0,2),16)+','+parseInt(h.slice(2,4),16)+','+parseInt(h.slice(4,6),16);}
+  function resize(){ if(!cv)return; W=cv.width=innerWidth; H=cv.height=innerHeight; }
+  function cap(){ return type==='mist'?6 : type==='orbs'?16 : type==='leaves'?26 : type==='runes'?16 : type==='ember'?70 : 70; }
+  function make(initial){
+    const p={};
+    if(type==='ember'){
+      p.x=Math.random()*W; p.y=H+Math.random()*60; p.r=Math.random()*2.4+.8;
+      p.vy=-(Math.random()*1.1+.5); p.vx=(Math.random()-.5)*.5; p.a=Math.random()*.5+.3; p.tw=Math.random()*6;
+    }else if(type==='leaves'){
+      p.x=Math.random()*W; p.y=initial?Math.random()*H:-30; p.r=Math.random()*7+6;
+      p.vy=Math.random()*.7+.4; p.sw=Math.random()*1.4+.4; p.ph=Math.random()*6; p.rot=Math.random()*6; p.vr=(Math.random()-.5)*.05; p.a=Math.random()*.4+.45;
+    }else if(type==='runes'){
+      p.x=Math.random()*W; p.y=Math.random()*H; p.g=GLYPHS[(Math.random()*GLYPHS.length)|0];
+      p.s=Math.random()*16+16; p.life=0; p.max=Math.random()*180+160; p.vy=-(Math.random()*.25+.08);
+    }else if(type==='orbs'){
+      p.x=Math.random()*W; p.y=Math.random()*H; p.r=Math.random()*26+12;
+      p.vx=(Math.random()-.5)*.3; p.vy=(Math.random()-.5)*.25; p.a=Math.random()*.16+.06; p.ph=Math.random()*6;
+    }else if(type==='mist'){
+      p.x=Math.random()*W; p.y=H*0.3+Math.random()*H*0.7; p.r=Math.random()*220+160;
+      p.vx=(Math.random()<.5?-1:1)*(Math.random()*.25+.08); p.a=Math.random()*.05+.03;
+    }else{ /* dust */
+      p.x=Math.random()*W; p.y=initial?Math.random()*H:H+5; p.r=Math.random()*1.8+.4;
+      p.vy=-(Math.random()*.35+.08); p.vx=(Math.random()-.5)*.25; p.a=Math.random()*.5+.2; p.tw=Math.random()*6;
+    }
+    return p;
+  }
+  function seed(){ parts=[]; const n=cap(); for(let i=0;i<n;i++) parts.push(make(true)); }
+  function step(p){
+    if(type==='ember'){ p.y+=p.vy; p.x+=p.vx+Math.sin((p.tw+=0.05))*0.3; if(p.y<-10){Object.assign(p,make(false));} }
+    else if(type==='leaves'){ p.y+=p.vy; p.x+=Math.sin((p.ph+=0.02))*p.sw; p.rot+=p.vr; if(p.y>H+20){Object.assign(p,make(false));} }
+    else if(type==='runes'){ p.y+=p.vy; p.life++; if(p.life>p.max){Object.assign(p,make(false));p.life=0;} }
+    else if(type==='orbs'){ p.x+=p.vx; p.y+=p.vy; p.ph+=0.01; if(p.x<-40)p.x=W+40; if(p.x>W+40)p.x=-40; if(p.y<-40)p.y=H+40; if(p.y>H+40)p.y=-40; }
+    else if(type==='mist'){ p.x+=p.vx; if(p.x<-p.r)p.x=W+p.r; if(p.x>W+p.r)p.x=-p.r; }
+    else { p.y+=p.vy; p.x+=p.vx; if(p.y<-5){p.y=H+5;p.x=Math.random()*W;} if(p.x<-5)p.x=W+5; if(p.x>W+5)p.x=-5; }
+  }
+  function draw(p){
+    if(type==='runes'){
+      const k=Math.sin(Math.min(p.life/p.max,1)*Math.PI); // fade in/out
+      ctx.font=p.s+'px Cinzel, serif'; ctx.fillStyle='rgba('+rgb+','+(k*0.5).toFixed(3)+')';
+      ctx.shadowBlur=12; ctx.shadowColor='rgba('+rgb+','+(k*0.6)+')'; ctx.fillText(p.g,p.x,p.y); return;
+    }
+    if(type==='mist'){
+      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+      g.addColorStop(0,'rgba('+rgb+','+p.a+')'); g.addColorStop(1,'rgba('+rgb+',0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.fill(); return;
+    }
+    if(type==='leaves'){
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      ctx.fillStyle='rgba('+rgb+','+p.a+')'; ctx.shadowBlur=4; ctx.shadowColor='rgba('+rgb+',.4)';
+      ctx.beginPath(); ctx.ellipse(0,0,p.r,p.r*0.5,0,0,7); ctx.fill();
+      ctx.strokeStyle='rgba(40,30,12,.25)'; ctx.lineWidth=.6; ctx.beginPath(); ctx.moveTo(-p.r,0); ctx.lineTo(p.r,0); ctx.stroke();
+      ctx.restore(); return;
+    }
+    if(type==='orbs'){
+      const a=p.a*(0.7+0.3*Math.sin(p.ph));
+      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+      g.addColorStop(0,'rgba('+rgb+','+(a*1.4)+')'); g.addColorStop(.6,'rgba('+rgb+','+(a*.5)+')'); g.addColorStop(1,'rgba('+rgb+',0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.fill(); return;
+    }
+    // dust / ember
+    const a=type==='ember'?p.a*(0.6+0.4*Math.sin(p.tw)):p.a;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7);
+    ctx.fillStyle='rgba('+rgb+','+a+')';
+    ctx.shadowBlur=type==='ember'?10:6; ctx.shadowColor='rgba('+rgb+',.6)'; ctx.fill();
+  }
+  function loop(){
+    raf=requestAnimationFrame(loop); if(!running||!ctx) return;
+    ctx.clearRect(0,0,W,H);
+    if(type==='mist'||type==='orbs') ctx.globalCompositeOperation='lighter';
+    for(const p of parts){ step(p); draw(p); }
+    ctx.globalCompositeOperation='source-over'; ctx.shadowBlur=0;
+  }
+  return {
+    start(t,hex){
+      if(!cv){ cv=document.getElementById('scene-fx'); ctx=cv.getContext('2d'); resize(); addEventListener('resize',()=>{resize();seed();}); }
+      type=t||'dust'; rgb=hex2rgb(hex||'#b9893b'); resize(); seed(); running=true; cv.style.opacity='1';
+      if(!raf) loop();
+    },
+    stop(){ running=false; if(cv){cv.style.opacity='0';} if(ctx&&W) setTimeout(()=>{if(!running)ctx.clearRect(0,0,W,H);},800); }
+  };
+})();
+
+/* ===================================================================
+   SFX — diegetyczny dźwięk przez WebAudio (bez plików), gated soundOn
+   =================================================================== */
+const SFX=(function(){
+  let ac,nb;
+  function ctx(){ if(!ac){ try{ ac=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ ac=null; } } return ac; }
+  function resume(){ const c=ctx(); if(c&&c.state==='suspended') c.resume(); }
+  function noiseBuf(c){ if(nb) return nb; const len=c.sampleRate; nb=c.createBuffer(1,len,c.sampleRate); const d=nb.getChannelData(0); for(let i=0;i<len;i++) d[i]=Math.random()*2-1; return nb; }
+  function noise(c,dur,filt,freq,q,gain,when){
+    const src=c.createBufferSource(); src.buffer=noiseBuf(c); src.loop=true;
+    const f=c.createBiquadFilter(); f.type=filt; f.frequency.value=freq; if(q) f.Q.value=q;
+    const g=c.createGain(); const t=when||c.currentTime;
+    g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(gain,t+0.008); g.gain.exponentialRampToValueAtTime(0.0006,t+dur);
+    src.connect(f); f.connect(g); g.connect(c.destination); src.start(t); src.stop(t+dur+0.03);
+  }
+  function tone(c,freq,dur,gain,type,when){
+    const o=c.createOscillator(); o.type=type||'sine'; o.frequency.value=freq;
+    const g=c.createGain(); const t=when||c.currentTime;
+    g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(gain,t+0.006); g.gain.exponentialRampToValueAtTime(0.0006,t+dur);
+    o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+dur+0.03);
+  }
+  return {
+    resume,
+    quill(){ if(!soundOn) return; const c=ctx(); if(!c) return; const t=c.currentTime; for(let i=0;i<4;i++) noise(c,0.05,'bandpass',1700+Math.random()*1300,7,0.05,t+i*0.055); },
+    page(){ if(!soundOn) return; const c=ctx(); if(!c) return; noise(c,0.26,'lowpass',2500,0.7,0.045); },
+    flip(){ if(!soundOn) return; const c=ctx(); if(!c) return; noise(c,0.11,'highpass',2200,0.7,0.05); },
+    seal(){ if(!soundOn) return; const c=ctx(); if(!c) return; const t=c.currentTime; tone(c,150,0.18,0.11,'sine',t); tone(c,86,0.22,0.09,'sine',t+0.012); noise(c,0.06,'lowpass',850,1,0.05,t); }
+  };
+})();
+
+/* keyboard: Esc closes modal */
+addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+/* v2 — manuskrypt */
+</script>
+
+</body>
+</html>
